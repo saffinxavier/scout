@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Scout — Job listings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo" aria-hidden="true"></span>
+        <div>
+          <h1>Scout</h1>
+          <p class="sub">Java / Spring Boot · India · Europe · Infopark</p>
+        </div>
+      </div>
+      <button id="scanBtn" type="button">
+        <span class="scan-spinner" aria-hidden="true"></span>
+        <span class="scan-label">Scan now</span>
+      </button>
+    </header>
+
+    <section class="filters" aria-label="Filters">
+      <label>
+        Region
+        <select id="region">
+          <option value="all">All</option>
+          <option value="india">India</option>
+          <option value="eu">Europe</option>
+          <option value="infopark">Infopark</option>
+        </select>
+      </label>
+      <label>
+        Company
+        <select id="company">
+          <option value="all">All companies</option>
+        </select>
+      </label>
+      <label>
+        Posted
+        <select id="dateRange">
+          <option value="all">Any time</option>
+          <option value="24h" selected>Last 24 hours</option>
+          <option value="48h">Last 48 hours</option>
+          <option value="7d">Last 7 days</option>
+          <option value="custom">Custom range</option>
+        </select>
+      </label>
+      <label class="custom-dates hidden" id="customWrap">
+        From
+        <input type="date" id="dateFrom" />
+        To
+        <input type="date" id="dateTo" />
+      </label>
+      <label class="check">
+        <input type="checkbox" id="includeUnknownDate" checked />
+        Show unknown dates
+      </label>
+      <p id="status" class="status" role="status"></p>
+    </section>
+
+    <section id="errors" class="errors hidden" aria-live="polite"></section>
+
+    <section id="results" class="results" aria-live="polite">
+      <div class="empty-state" id="emptyState">
+        <p>Click <strong>Scan now</strong> to fetch listings that fit your profile.</p>
+      </div>
+    </section>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

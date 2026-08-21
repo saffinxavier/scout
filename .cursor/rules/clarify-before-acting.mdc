@@ -1,0 +1,13 @@
+---
+description: Clarify doubts and surface suggestions before taking any action
+alwaysApply: true
+---
+
+# Clarify before acting
+
+Before doing anything (edits, commands, commits, PRs, installs, refactors):
+
+1. **Clear all doubts first.** If anything is ambiguous, missing, or has more than one reasonable interpretation, ask before proceeding. Do not guess and ship.
+2. **Say every suggestion first.** List alternatives, risks, simpler options, and recommended approach in the reply *before* making changes. Wait for confirmation when the choice is non-trivial or irreversible.
+
+Only skip the pause when the request is already fully unambiguous and the next step is obvious and low-risk.

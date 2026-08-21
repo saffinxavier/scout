@@ -1,0 +1,173 @@
+# SAFFIN XAVIER - CAREER PROFILE & STRATEGIC INFORMATION
+ 
+---
+ 
+## PERSONAL INFORMATION
+ 
+**Name**: Saffin Xavier
+**Contact**: +91 7558970548
+**Email**: saffinxavier@gmail.com
+**Location**: Thottakath (H), Chennur, Kothad PO, Pin 682027, Ernakulam, Kerala, India
+**Visa Status**: Indian National (needs sponsorship for non-India roles)
+**Notice Period**: 3 months
+**Relocation**: Willing to relocate
+ 
+---
+ 
+## CAREER STRATEGY
+ 
+- **Goal**: Secure Senior Software/Backend Engineer
+- **Timeline**: Immediate (applications ongoing)
+ 
+## WORK EXPERIENCE
+ 
+### Current Role
+**Position**: Software Engineer Level 2 (Senior Backend)
+**Company**: Interland Technologies
+**Location**: Kochi, India
+**Duration**: August 22, 2022 - Present (3.5+ years as of June 2026)
+ 
+**Key Responsibilities**:
+- Lead development of PayZo HRMS (enterprise HR/Payroll management system for Saudi Arabia)
+- Architect and design microservices-based systems
+- Handle complex financial calculations (GOSI, LOP, payroll automation)
+- Implement event-driven architecture (Kafka for notifications)
+- Manage full-stack solutions: backend, frontend, mobile, database, cloud
+ 
+### Previous Experience
+- **None before Interland** (joined right after B.Tech graduation)
+ 
+---
+ 
+## EDUCATION
+ 
+**Degree**: Bachelor of Technology (B.Tech) in Computer Science Engineering
+**University**: APJ Abdul Kalam Technological University (KTU), Kerala
+**College**: Albertian Institute of Science & Technology
+**CGPA**: 7.12/10
+**Graduation**: June 2022
+**Register Number**: AIK18CS039
+ 
+**Relevant Coursework**: Data Structures, Algorithms, Databases, Object-Oriented Programming, Software Engineering, Web Development, Distributed Systems
+---
+ 
+## TECHNICAL SKILLS
+ 
+### Languages
+- **Primary**: Java (8 → 21; evolved through multiple LTS versions), SQL
+- **Secondary**: Python, JavaScript
+- **Proficiency Level**: Fluent in Java and SQL; conversational in Python and JavaScript
+- **Java Evolution**: Started with Java 8; currently proficient in Java 21 (records, pattern matching, virtual threads). Stayed current with LTS releases and modern language features.
+ 
+### Backend & Architecture
+- **Core Expertise**: Spring Boot (Java 21), Spring Framework, microservices architecture, REST APIs, business logic development
+- **Java Versions**: Proficient in Java 8 through Java 21; experienced with modern features (records, pattern matching, text blocks, virtual threads)
+- **Experience Level**: 3.5+ years in production systems, staying current with language evolution
+ 
+### Databases
+- **Primary**: PostgreSQL (production experience, optimization, indexing)
+- **Secondary**: Oracle Cloud Storage
+- **Experience**: SQL optimization, database design, scaling
+ 
+### Event-Driven & Messaging
+- **Kafka**: Implemented in PayZo HRMS for async notification processing
+- **Learning Path**: actively learning, willing to upskill
+ 
+### Testing & Quality
+- **Frameworks**: JUnit, Mockito
+- **Approach**: Unit testing, integration testing, test-driven development
+- **Practice**: Comprehensive test coverage for critical workflows
+ 
+### Frontend & Mobile
+- **Frontend**: Angular, HTML/CSS, JavaScript
+- **Mobile**: Firebase Cloud Messaging
+ 
+### IAM & Security
+- **Keycloak**: Identity management, role-based access control (RBAC)
+ 
+## MAJOR PROJECT: PAYZO HRMS
+ 
+**Project Name**: PayZo HR Management System
+**Client**: Saudi Arabian enterprises
+**Role**: Lead Engineer / Technical Lead and Lead Developer
+**Duration**: August 2022 - Present
+**Status**: Production system, serving multiple companies
+**Product URL**: https://payzohr.com/landing
+ 
+### What It Does
+- Comprehensive HR and payroll management platform
+- Automates payroll processing, leave management, GOSI calculation
+- Handles multi-company, multi-currency scenarios
+- Compliance-focused (Saudi labor regulations)
+ 
+### Technical Architecture
+- **Backend**: Java Spring Boot microservices
+- **Frontend**: Angular
+- **Mobile**: Android with Firebase
+- **Database**: PostgreSQL
+- **Cloud Storage**: Oracle Cloud
+- **IAM**: Keycloak (identity management, RBAC)
+- **Messaging**: Kafka (async notifications)
+ 
+### Key Achievements
+- Designed scalable microservices architecture for enterprise clients
+- Implemented event-driven notifications using Kafka
+- Built complex financial calculation engines (GOSI, LOP automation)
+- Reduced manual processing by 95%
+- Comprehensive test coverage using Mockito and JUnit
+- Zero-downtime deployments with Docker and CI/CD
+ 
+## LANGUAGES
+ 
+- **English**: Fluent
+  - Listening: 7, Reading: 7, Writing: 6.5, Speaking: 6.5
+- **Malayalam**: Native
+ 
+---
+ 
+## SOFT SKILLS & COMPETENCIES
+ 
+- **System Design**: Architected PayZo for scale and performance
+- **Technical Leadership**: Led technical decisions for PayZo across architecture and deployment
+- **Business Problem-Solving**: Translated regulatory requirements into technical solutions
+- **Cross-Functional Collaboration**: Worked with product, design, and operations teams
+- **Learning Agility**: Self-taught, quick learner, comfortable with new technologies
+- **Code Quality Advocacy**: Emphasis on testing, SOLID principles, continuous refactoring
+- **Event-Driven Thinking**: Kafka experience, expanding into CQRS/Event Sourcing
+
+---
+## DOCUMENTS & CERTIFICATES
+ 
+### Education Documents
+- KTU B.Tech Degree Certificate (AIK18CS039, CGPA 7.12, June 2022)
+- DHSE Certificate (10+2)
+- CBSE Certificate (10th)
+ 
+### Identification
+- Indian Passport
+- All supporting documents available
+ 
+---
+ 
+## NOTES FOR FUTURE APPLICATIONS
+ 
+### Reusable Narrative Elements
+1. **PayZo HRMS**: Complex financial system with compliance automation
+   - **For Fintech**: Highlight GOSI/LOP as regulatory complexity similar to trading
+   - **For Consulting**: Show business problem-solving and domain translation
+   - **For Startups**: Highlight full-stack ownership and MVP-to-production journey
+ 
+2. **Microservices & Kafka**: Event-driven architecture for scalability
+   - **For Event-Driven Roles**: Lead with Kafka experience
+   - **For Cloud-Native**: Emphasize Docker, CI/CD, infrastructure thinking
+   - **For Backend Platforms**: Highlight multi-service orchestration
+
+ 
+## CONTACT & AVAILABILITY
+ 
+**Best Contact Method**: Email (saffinxavier@gmail.com) or WhatsApp (+91 7558970548)
+**Interview Availability**: Flexible (flexible timezone, can adjust working hours)
+**Notice Period**: 3 months from offer date 
+---
+ 
+**Document Status**: Complete and comprehensive. Use as reference for all future role applications and interviews.

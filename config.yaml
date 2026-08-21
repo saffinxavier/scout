@@ -1,0 +1,188 @@
+keywords:
+  - java
+  - spring boot
+  - spring
+  - springboot
+
+exclude_levels:
+  - intern
+  - internship
+  - graduate
+  - campus
+  - trainee
+  - apprentice
+  - student
+
+# Drop postings whose stated minimum experience is above this (3.5y profile → 4).
+max_years: 4
+
+# Titles that usually imply 5–8+ years (India/EU). Infopark skips this gate.
+exclude_seniority:
+  - assistant vice president
+  - vice president
+  - principal engineer
+  - staff engineer
+  - architect
+  - director
+
+# Drop when these appear as degree requirements (see filters.requires_excluded_education).
+exclude_education:
+  - master's
+  - masters
+  - m.tech
+  - mtech
+  - mba
+  - m.s
+  - postgraduate
+  - post-graduate
+
+sponsorship_keywords:
+  - visa
+  - sponsorship
+  - work permit
+  - highly skilled migrant
+  - kennismigrant
+  - blue card
+  - relocation
+  - residence permit
+  - sponsor
+
+# Sources marked sponsorship_board: true skip keyword sponsorship checks for EU.
+sources:
+  # --- Infopark Kochi ---
+  - id: infopark
+    enabled: true
+    region: infopark
+    search_url: "https://infopark.in/companies-job"
+    max_pages: 30
+
+  # --- Europe sponsorship / relocation boards ---
+  - id: relocate_me
+    enabled: true
+    region: eu
+    sponsorship_board: true
+    search_url: "https://relocate.me/search?query=java%20spring"
+    max_pages: 10
+
+  - id: welcome_nl
+    enabled: true
+    region: eu
+    sponsorship_board: true
+    search_url: "https://www.welcometothenetherlands.com/vacatures/"
+
+  - id: jaabz
+    enabled: true
+    region: eu
+    sponsorship_board: true
+    search_url: "https://jaabz.com/jobs?q=java+spring&visa=1"
+    max_pages: 10
+
+  - id: arbeitnow
+    enabled: true
+    region: eu
+    sponsorship_board: false
+    # Public EU job board API; sponsorship keyword still required.
+    max_pages: 8
+
+  - id: remotive
+    enabled: true
+    region: eu
+    sponsorship_board: false
+    # Remote roles; kept only if EU/worldwide + sponsorship keywords. API returns full search set.
+
+  # --- India Big 4 + banks ---
+  - id: jpmorgan
+    enabled: true
+    region: india
+    company: JPMorgan Chase
+    keyword: Java
+
+  - id: citi
+    enabled: true
+    region: india
+    company: Citi
+    workday:
+      tenant: citi
+      shard: wd5
+      site: "2"
+      keyword: Java
+      max_results: 500
+      # Prefer India locations; remote also kept by filter.
+      location_substr:
+        - india
+        - mumbai
+        - bengaluru
+        - bangalore
+        - hyderabad
+        - pune
+        - chennai
+        - gurgaon
+        - gurugram
+        - noida
+        - remote
+
+  - id: goldman_sachs
+    enabled: true
+    region: india
+    company: Goldman Sachs
+    search_url: "https://higher.gs.com/roles?keyword=Java&location=India"
+
+  - id: morgan_stanley
+    enabled: true
+    region: india
+    company: Morgan Stanley
+    search_url: "https://www.morganstanley.com/careers/career-opportunities-search?keywords=Java"
+
+  - id: deloitte
+    enabled: true
+    region: india
+    company: Deloitte
+    # South Asia (India) careers — not apply.deloitte.com US board.
+    rss_url: "https://southasiacareers.deloitte.com/services/rss/job/?locale=en_US&keywords=(Java)"
+    search_url: "https://southasiacareers.deloitte.com/search/?q=Java"
+    max_pages: 8
+
+  - id: pwc
+    enabled: true
+    region: india
+    company: PwC
+    keyword: Java
+    workday:
+      tenant: pwc
+      shard: wd3
+      site: Global_Experienced_Careers
+      keyword: Java
+      max_results: 500
+      location_substr:
+        - india
+        - mumbai
+        - bengaluru
+        - bangalore
+        - hyderabad
+        - pune
+        - chennai
+        - gurgaon
+        - gurugram
+        - noida
+        - kolkata
+        - delhi
+        - remote
+
+  - id: ey
+    enabled: true
+    region: india
+    company: EY
+    search_url: "https://careers.ey.com/ey/search/?q=Java&location=India"
+
+  - id: kpmg
+    enabled: true
+    region: india
+    company: KPMG
+    # Marketing career hub (JS job board has no stable public API yet).
+    search_url: "https://kpmg.com/in/en/careers/experienced-professionals.html"
+
+http:
+  timeout_seconds: 30
+  user_agent: "Mozilla/5.0 (compatible; ScoutJobFinder/1.0; +local)"
+  # Career CDNs sometimes break local trust stores on Windows.
+  verify_ssl: false

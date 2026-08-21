@@ -1,0 +1,20 @@
+---
+description: Keep OBJECTIVE.md and PROGRESS.md current for chat handoff
+alwaysApply: true
+---
+
+# Handoff docs
+
+When starting a **new chat** about this project, read [`OBJECTIVE.md`](OBJECTIVE.md) and [`PROGRESS.md`](PROGRESS.md) first (and `Saffin profile.txt` if role-fit matters). Do not ask the user to re-explain the whole product.
+
+## When to update
+After meaningful work in this repo, update those files in the same session:
+
+1. **OBJECTIVE.md** — if goals, regions, filters, run instructions, or out-of-scope changed.
+2. **PROGRESS.md** — mark done items, note new limitations, adjust “Next ideas”, set **Last updated** date.
+
+Keep both concise. Prefer checkboxes and bullets over long narrative.
+
+## Do not
+- Duplicate the full chat history into these files.
+- Leave PROGRESS stale after shipping a user-visible feature or source fix.
