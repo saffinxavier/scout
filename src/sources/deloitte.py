@@ -13,21 +13,47 @@ from ..models import Job
 
 SOURCE_ID = "deloitte"
 BASE = "https://southasiacareers.deloitte.com"
-RSS = "https://southasiacareers.deloitte.com/services/rss/job/?locale=en_US&keywords=(Java)"
-SEARCH = "https://southasiacareers.deloitte.com/search/?q=Java&startrow={start}"
+RSS = "https://southasiacareers.deloitte.com/services/rss/job/?locale=en_US&keywords=(Java)%20AND%20locationSearch:(India)"
+SEARCH = "https://southasiacareers.deloitte.com/search/?q=Java&locationsearch=India&startrow={start}"
 MAX_PAGES = 8
 PAGE_SIZE = 25
+
+_INDIA_LOC = re.compile(
+    r"\b(Bengaluru|Bangalore|Hyderabad|Pune|Mumbai|Chennai|Delhi|Gurgaon|Gurugram|"
+    r"Noida|Kolkata|Ahmedabad|Kochi|India|IN)\b",
+    re.I,
+)
+_US_BLOCK = re.compile(
+    r"\b(United States|USA|New York|Texas|California|Chicago|Atlanta|Boston|Seattle|"
+    r"San Francisco|Dallas|Austin|Remote - US|US-only)\b|apply\.deloitte\.com|"
+    r"careers\.deloitte\.com/(?:us|global)|usijobs\.deloitte\.com",
+    re.I,
+)
 
 
 def fetch(client: httpx.Client, source_cfg: dict[str, Any], app_cfg: dict[str, Any]) -> list[Job]:
     by_url: dict[str, Job] = {}
     for job in _from_rss(client, source_cfg):
-        by_url[job.url.split("?")[0].lower()] = job
+        if _is_india_job(job):
+            by_url[job.url.split("?")[0].lower()] = job
     for job in _from_search_pages(client, source_cfg):
         key = job.url.split("?")[0].lower()
-        if key not in by_url:
+        if key not in by_url and _is_india_job(job):
             by_url[key] = job
     return list(by_url.values())
+
+
+def _is_india_job(job: Job) -> bool:
+    """Hard gate: South Asia careers host + India location signal; never US boards."""
+    url = (job.url or "").lower()
+    if "southasiacareers.deloitte.com" not in url:
+        return False
+    if "apply.deloitte.com" in url or "usijobs.deloitte.com" in url:
+        return False
+    blob = f"{job.title} {job.description} {job.location} {job.url}"
+    if _US_BLOCK.search(blob) and not _INDIA_LOC.search(blob):
+        return False
+    return bool(_INDIA_LOC.search(blob))
 
 
 def _from_rss(client: httpx.Client, source_cfg: dict[str, Any]) -> list[Job]:
@@ -47,6 +73,8 @@ def _from_rss(client: httpx.Client, source_cfg: dict[str, Any]) -> list[Job]:
         desc = (item.findtext("description") or "").strip()
         pub = (item.findtext("pubDate") or "").strip()
         if not title or not link:
+            continue
+        if "southasiacareers.deloitte.com" not in link.lower():
             continue
         key = link.split("?")[0].lower()
         if key in seen:
@@ -70,11 +98,21 @@ def _from_rss(client: httpx.Client, source_cfg: dict[str, Any]) -> list[Job]:
 
 def _from_search_pages(client: httpx.Client, source_cfg: dict[str, Any]) -> list[Job]:
     max_pages = int(source_cfg.get("max_pages") or MAX_PAGES)
+    search_tpl = (
+        source_cfg.get("search_url")
+        or "https://southasiacareers.deloitte.com/search/?q=Java&locationsearch=India"
+    )
+    if "startrow=" not in search_tpl:
+        sep = "&" if "?" in search_tpl else "?"
+        search_tpl = f"{search_tpl}{sep}startrow={{start}}"
+    elif "{start}" not in search_tpl:
+        search_tpl = re.sub(r"startrow=\d+", "startrow={start}", search_tpl)
+
     jobs: list[Job] = []
     seen: set[str] = set()
     for page in range(max_pages):
         start = page * PAGE_SIZE
-        r = client.get(SEARCH.format(start=start))
+        r = client.get(search_tpl.format(start=start))
         r.raise_for_status()
         soup = BeautifulSoup(r.text, "lxml")
         before = len(seen)
@@ -83,6 +121,8 @@ def _from_search_pages(client: httpx.Client, source_cfg: dict[str, Any]) -> list
             if "/job/" not in href:
                 continue
             full = urljoin(BASE, href).split("?")[0]
+            if "southasiacareers.deloitte.com" not in full.lower():
+                continue
             key = full.lower()
             if key in seen:
                 continue
@@ -111,7 +151,7 @@ def _location_from(title: str, desc: str, url: str) -> str:
     blob = f"{title} {desc} {url}"
     m = re.search(
         r"\b(Bengaluru|Bangalore|Hyderabad|Pune|Mumbai|Chennai|Delhi|Gurgaon|Gurugram|"
-        r"Noida|Kolkata|Ahmedabad|Kochi|India)\b",
+        r"Noida|Kolkata|Ahmedabad|Kochi)\b",
         blob,
         re.I,
     )

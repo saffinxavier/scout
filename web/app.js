@@ -152,14 +152,37 @@
     rebuildCompanyOptions();
   }
 
+  function titlePriority(job) {
+    // Higher = show first. Java/Spring first, then backend/fullstack/SWE.
+    const t = String(job.title || "").toLowerCase();
+    let score = 0;
+    if (/\bjava\b/.test(t)) score += 100;
+    if (/\bspring\s*boot\b|\bspringboot\b/.test(t)) score += 80;
+    else if (/\bspring\b/.test(t)) score += 60;
+    if (score >= 160) score += 40; // java + spring
+    if (/\bbackend\b|\bback[\s-]?end\b/.test(t)) score += 40;
+    if (/\bfull[\s-]?stack\b|\bfullstack\b/.test(t)) score += 35;
+    if (/\bsoftware\s+engineer\b/.test(t)) score += 25;
+    return score;
+  }
+
   function filtered() {
     const region = regionEl.value;
     const company = companyEl.value;
-    return jobs.filter((j) => {
-      if (region !== "all" && j.region !== region) return false;
-      if (company !== "all" && j.company !== company) return false;
-      return inDateRange(j);
-    });
+    return jobs
+      .filter((j) => {
+        if (region !== "all" && j.region !== region) return false;
+        if (company !== "all" && j.company !== company) return false;
+        return inDateRange(j);
+      })
+      .sort((a, b) => {
+        const d = titlePriority(b) - titlePriority(a);
+        if (d !== 0) return d;
+        const dateA = a.posted_at || "";
+        const dateB = b.posted_at || "";
+        if (dateA !== dateB) return dateB.localeCompare(dateA);
+        return String(a.title || "").localeCompare(String(b.title || ""));
+      });
   }
 
   function regionClass(region) {

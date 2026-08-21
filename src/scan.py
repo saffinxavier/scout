@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib
 import json
+import pkgutil
 from typing import Any
 
 from .config import ROOT, load_config
@@ -11,11 +12,15 @@ from .models import Job, SourceError
 
 
 def _registry():
-    """Reload adapters each scan so new sources apply without restart."""
+    """Reload all source modules so adapter edits apply without restarting Flask."""
     from . import sources as sources_pkg
 
-    importlib.reload(sources_pkg)
-    return sources_pkg.REGISTRY
+    for info in pkgutil.iter_modules(sources_pkg.__path__, sources_pkg.__name__ + "."):
+        try:
+            importlib.reload(importlib.import_module(info.name))
+        except Exception:
+            pass
+    return importlib.reload(sources_pkg).REGISTRY
 
 
 def _filter_kwargs(cfg: dict[str, Any], source_cfgs: list[dict[str, Any]]) -> dict[str, Any]:

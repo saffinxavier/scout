@@ -7,7 +7,7 @@ Last updated: 2026-08-22
 - [x] Filters: keywords, max_years=4, education, seniority (config-driven), EU sponsorship rules
 - [x] Infopark adapter with **full pagination** (fixed missing Empay Java on page 3+)
 - [x] Pagination audit/fixes: JPM offset loop, Workday max_results 500, Jaabz pages, Arbeitnow pages, Relocate intl pages
-- [x] Deloitte switched to **southasiacareers.deloitte.com** RSS (India/South Asia), not US apply.deloitte.com
+- [x] Deloitte: South Asia only (`southasiacareers.deloitte.com` + India location gate); rejects `apply.deloitte.com` US URLs; adapter modules fully reloaded each scan
 - [x] Progressive scan: `/api/sources` + `/api/scan/one` — loads sources **one-by-one** for selected region only
 - [x] Default Posted filter = last 24 hours
 - [x] Region/company dropdown counts; scan button spinner

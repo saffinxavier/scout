@@ -137,9 +137,9 @@ sources:
     enabled: true
     region: india
     company: Deloitte
-    # South Asia (India) careers — not apply.deloitte.com US board.
-    rss_url: "https://southasiacareers.deloitte.com/services/rss/job/?locale=en_US&keywords=(Java)"
-    search_url: "https://southasiacareers.deloitte.com/search/?q=Java"
+    # India/South Asia only — never apply.deloitte.com (US board).
+    rss_url: "https://southasiacareers.deloitte.com/services/rss/job/?locale=en_US&keywords=(Java)%20AND%20locationSearch:(India)"
+    search_url: "https://southasiacareers.deloitte.com/search/?q=Java&locationsearch=India"
     max_pages: 8
 
   - id: pwc
