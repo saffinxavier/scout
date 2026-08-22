@@ -4,6 +4,7 @@ __pycache__/
 venv/
 .env
 data/jobs.json
+data/status.json
 _probe*.py
 *.egg-info/
 .DS_Store

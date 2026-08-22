@@ -87,6 +87,6 @@ def _parse_page(html: str, jobs: list[Job], seen: set[str]) -> None:
                 region="eu",
                 sponsorship=True,
                 posted_at=None,
-                description=f"{title} java spring boot {slug}",
+                description=title,
             )
         )

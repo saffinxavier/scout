@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="shell">
@@ -19,10 +19,23 @@
           <p class="sub">Java / Spring Boot · India · Europe · Infopark</p>
         </div>
       </div>
-      <button id="scanBtn" type="button">
-        <span class="scan-spinner" aria-hidden="true"></span>
-        <span class="scan-label">Scan now</span>
-      </button>
+      <div class="top-actions">
+        <div id="authBox" class="auth-box">
+          <form id="loginForm" class="login-form">
+            <input id="loginEmail" type="email" required placeholder="Email" autocomplete="email" />
+            <button type="submit">Email link</button>
+          </form>
+          <p id="loginHint" class="auth-hint hidden"></p>
+          <div id="loggedIn" class="logged-in hidden">
+            <span id="userEmail"></span>
+            <button id="signOutBtn" type="button">Sign out</button>
+          </div>
+        </div>
+        <button id="scanBtn" type="button">
+          <span class="scan-spinner" aria-hidden="true"></span>
+          <span class="scan-label">Scan now</span>
+        </button>
+      </div>
     </header>
 
     <section class="filters" aria-label="Filters">
@@ -51,6 +64,15 @@
           <option value="custom">Custom range</option>
         </select>
       </label>
+      <label>
+        Status
+        <select id="markFilter">
+          <option value="open" selected>Open</option>
+          <option value="applied">Applied</option>
+          <option value="hidden">Hidden</option>
+          <option value="all">All</option>
+        </select>
+      </label>
       <label class="custom-dates hidden" id="customWrap">
         From
         <input type="date" id="dateFrom" />
@@ -68,11 +90,13 @@
 
     <section id="results" class="results" aria-live="polite">
       <div class="empty-state" id="emptyState">
-        <p>Click <strong>Scan now</strong> to fetch listings that fit your profile.</p>
+        <p>Loading listings…</p>
       </div>
     </section>
   </div>
 
-  <script src="/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>

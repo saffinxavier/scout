@@ -8,10 +8,17 @@
   const regionEl = document.getElementById("region");
   const companyEl = document.getElementById("company");
   const dateRangeEl = document.getElementById("dateRange");
+  const markFilterEl = document.getElementById("markFilter");
   const customWrap = document.getElementById("customWrap");
   const dateFrom = document.getElementById("dateFrom");
   const dateTo = document.getElementById("dateTo");
   const includeUnknown = document.getElementById("includeUnknownDate");
+  const loginForm = document.getElementById("loginForm");
+  const loginEmail = document.getElementById("loginEmail");
+  const loginHint = document.getElementById("loginHint");
+  const loggedIn = document.getElementById("loggedIn");
+  const userEmail = document.getElementById("userEmail");
+  const signOutBtn = document.getElementById("signOutBtn");
 
   const REGION_LABELS = {
     all: "All",
@@ -21,6 +28,23 @@
   };
 
   let jobs = [];
+  let marks = {}; // urlKey -> applied | hidden
+  let localApi = false;
+  let sessionUser = null;
+  let sb = null;
+
+  const cfg = window.SCOUT || {};
+  if (window.supabase && cfg.supabaseUrl && cfg.supabaseAnonKey) {
+    sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+  }
+
+  function urlKey(url) {
+    return String(url || "").split("?")[0].toLowerCase();
+  }
+
+  function jobMark(job) {
+    return marks[urlKey(job.url)] || "";
+  }
 
   function setStatus(msg) {
     status.textContent = msg || "";
@@ -153,13 +177,12 @@
   }
 
   function titlePriority(job) {
-    // Higher = show first. Java/Spring first, then backend/fullstack/SWE.
     const t = String(job.title || "").toLowerCase();
     let score = 0;
     if (/\bjava\b/.test(t)) score += 100;
     if (/\bspring\s*boot\b|\bspringboot\b/.test(t)) score += 80;
     else if (/\bspring\b/.test(t)) score += 60;
-    if (score >= 160) score += 40; // java + spring
+    if (score >= 160) score += 40;
     if (/\bbackend\b|\bback[\s-]?end\b/.test(t)) score += 40;
     if (/\bfull[\s-]?stack\b|\bfullstack\b/.test(t)) score += 35;
     if (/\bsoftware\s+engineer\b/.test(t)) score += 25;
@@ -169,11 +192,17 @@
   function filtered() {
     const region = regionEl.value;
     const company = companyEl.value;
+    const mark = markFilterEl.value;
     return jobs
       .filter((j) => {
         if (region !== "all" && j.region !== region) return false;
         if (company !== "all" && j.company !== company) return false;
-        return inDateRange(j);
+        if (!inDateRange(j)) return false;
+        const st = jobMark(j);
+        if (mark === "open") return !st;
+        if (mark === "applied") return st === "applied";
+        if (mark === "hidden") return st === "hidden";
+        return true;
       })
       .sort((a, b) => {
         const d = titlePriority(b) - titlePriority(a);
@@ -191,6 +220,18 @@
     return "region-india";
   }
 
+  function renderAuth() {
+    if (sessionUser) {
+      loginForm.classList.add("hidden");
+      loggedIn.classList.remove("hidden");
+      userEmail.textContent = sessionUser.email || "Signed in";
+      loginHint.classList.add("hidden");
+    } else {
+      loginForm.classList.remove("hidden");
+      loggedIn.classList.add("hidden");
+    }
+  }
+
   function render() {
     rebuildFilterCounts();
     const rows = filtered();
@@ -199,22 +240,17 @@
 
     if (!jobs.length) {
       emptyState.classList.remove("hidden");
-      emptyState.innerHTML =
-        `<p>Click <strong>Scan now</strong> to fetch listings that fit your profile.</p>`;
+      emptyState.innerHTML = localApi
+        ? `<p>Click <strong>Scan now</strong> to fetch listings that fit your profile.</p>`
+        : `<p>No listings yet. On GitHub, open <strong>Actions</strong> → <strong>Scan and publish</strong> → Run workflow.</p>`;
       setStatus("");
       return;
     }
 
     if (!rows.length) {
       emptyState.classList.remove("hidden");
-      const region = regionEl.value;
-      if (region === "infopark") {
-        emptyState.innerHTML =
-          `<p>No Infopark jobs match the other filters (date / company / seniority).</p>`;
-      } else {
-        emptyState.innerHTML = `<p>No jobs match the current filters.</p>`;
-      }
-      setStatus(`${jobs.length} scanned · 0 shown`);
+      emptyState.innerHTML = `<p>No jobs match the current filters.</p>`;
+      setStatus(`${jobs.length} loaded · 0 shown`);
       return;
     }
 
@@ -222,10 +258,18 @@
     const frag = document.createDocumentFragment();
     rows.forEach((j) => {
       const article = document.createElement("article");
-      article.className = "job-card";
+      const st = jobMark(j);
+      article.className = "job-card" + (st ? ` is-${st}` : "");
+      const key = urlKey(j.url);
       const sponsor = j.sponsorship
         ? `<span class="pill sponsor">Sponsorship</span>`
         : "";
+      const markPill =
+        st === "applied"
+          ? `<span class="pill applied">Applied</span>`
+          : st === "hidden"
+            ? `<span class="pill hidden-mark">Hidden</span>`
+            : "";
       article.innerHTML = `
         <div>
           <h2 class="job-title">${escapeHtml(j.title)}</h2>
@@ -238,28 +282,87 @@
             <span class="pill ${regionClass(j.region)}">${escapeHtml(j.region)}</span>
             <span class="pill source">${escapeHtml(j.source)}</span>
             ${sponsor}
+            ${markPill}
           </div>
         </div>
         <div class="job-actions">
           <a class="apply" href="${escapeHtml(j.url)}" target="_blank" rel="noopener noreferrer">Apply</a>
+          <button type="button" class="ghost" data-mark="applied" data-url="${escapeHtml(key)}">Applied</button>
+          <button type="button" class="ghost" data-mark="hidden" data-url="${escapeHtml(key)}">Hide</button>
+          ${st ? `<button type="button" class="ghost" data-mark="" data-url="${escapeHtml(key)}">Clear</button>` : ""}
         </div>`;
       frag.appendChild(article);
     });
     results.appendChild(frag);
-    setStatus(`${jobs.length} scanned · ${rows.length} shown`);
+    setStatus(`${jobs.length} loaded · ${rows.length} shown`);
+  }
+
+  async function loadMarks() {
+    marks = {};
+    if (!sb || !sessionUser) return;
+    const { data, error } = await sb.from("job_status").select("url,state");
+    if (error) {
+      showErrors([{ source: "supabase", message: error.message }]);
+      return;
+    }
+    for (const row of data || []) {
+      marks[urlKey(row.url)] = row.state;
+    }
+  }
+
+  async function setMark(key, state) {
+    if (!sb) {
+      loginHint.textContent = "Supabase config missing.";
+      loginHint.classList.remove("hidden");
+      return;
+    }
+    if (!sessionUser) {
+      loginHint.textContent = "Sign in with email first (check your inbox for the link).";
+      loginHint.classList.remove("hidden");
+      return;
+    }
+    if (!state) {
+      const { error } = await sb.from("job_status").delete().eq("url", key);
+      if (error) {
+        showErrors([{ source: "supabase", message: error.message }]);
+        return;
+      }
+      delete marks[key];
+    } else {
+      const { error } = await sb.from("job_status").upsert(
+        {
+          url: key,
+          state,
+          user_id: sessionUser.id,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id,url" }
+      );
+      if (error) {
+        showErrors([{ source: "supabase", message: error.message }]);
+        return;
+      }
+      marks[key] = state;
+    }
+    render();
   }
 
   async function scan() {
+    if (!localApi) return;
     setScanning(true);
-    jobs = [];
+    const scanRegion = regionEl.value || "all";
+    if (scanRegion === "all") {
+      jobs = [];
+    } else {
+      jobs = jobs.filter((j) => j.region !== scanRegion);
+    }
     const allErrors = [];
     companyEl.value = "all";
     showErrors([]);
     render();
 
     try {
-      const region = regionEl.value || "all";
-      const srcRes = await fetch(`/api/sources?region=${encodeURIComponent(region)}`);
+      const srcRes = await fetch(`/api/sources?region=${encodeURIComponent(scanRegion)}`);
       const srcData = await srcRes.json();
       const sources = srcData.sources || [];
       if (!sources.length) {
@@ -279,10 +382,9 @@
           });
           const data = await res.json();
           const batch = data.jobs || [];
-          // Merge + dedupe by url
-          const seen = new Set(jobs.map((j) => (j.url || "").split("?")[0].toLowerCase()));
+          const seen = new Set(jobs.map((j) => urlKey(j.url)));
           for (const j of batch) {
-            const key = (j.url || "").split("?")[0].toLowerCase();
+            const key = urlKey(j.url);
             if (!key || seen.has(key)) continue;
             seen.add(key);
             jobs.push(j);
@@ -296,10 +398,18 @@
         }
       }
 
+      const toSave =
+        scanRegion === "all"
+          ? jobs
+          : jobs.filter((j) => j.region === scanRegion);
       await fetch("/api/jobs/save", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobs, errors: allErrors }),
+        body: JSON.stringify({
+          region: scanRegion,
+          jobs: toSave,
+          errors: allErrors,
+        }),
       });
       setStatus(`${jobs.length} scanned · ${filtered().length} shown`);
     } catch (err) {
@@ -310,20 +420,71 @@
     }
   }
 
-  async function loadCached() {
+  async function loadJobs() {
     try {
       const res = await fetch("/api/jobs");
-      const data = await res.json();
-      jobs = data.jobs || [];
-      if (jobs.length) {
-        showErrors(data.errors || []);
-        render();
-        setStatus(`${jobs.length} from last scan · adjust filters or Scan now`);
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.jobs)) {
+          localApi = true;
+          jobs = data.jobs;
+          scanBtn.classList.remove("hidden");
+          if (jobs.length) {
+            showErrors(data.errors || []);
+            setStatus(`${jobs.length} from last scan`);
+          }
+          render();
+          return;
+        }
       }
     } catch (_) {
-      /* first run */
+      /* hosted */
+    }
+    localApi = false;
+    scanBtn.classList.add("hidden");
+    try {
+      const res = await fetch("jobs.json");
+      const data = await res.json();
+      jobs = data.jobs || [];
+      showErrors(data.errors || []);
+      render();
+    } catch (_) {
+      jobs = [];
+      render();
     }
   }
+
+  async function onAuth(session) {
+    sessionUser = session && session.user ? session.user : null;
+    renderAuth();
+    await loadMarks();
+    render();
+  }
+
+  results.addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-mark]");
+    if (!btn) return;
+    setMark(btn.getAttribute("data-url"), btn.getAttribute("data-mark") || "");
+  });
+
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!sb) return;
+    loginHint.textContent = "Sending login email…";
+    loginHint.classList.remove("hidden");
+    const redirectTo = new URL(".", window.location.href).href;
+    const { error } = await sb.auth.signInWithOtp({
+      email: loginEmail.value.trim(),
+      options: { emailRedirectTo: redirectTo },
+    });
+    loginHint.textContent = error
+      ? error.message
+      : "Check your email and open the link on this same device.";
+  });
+
+  signOutBtn.addEventListener("click", async () => {
+    if (sb) await sb.auth.signOut();
+  });
 
   dateRangeEl.addEventListener("change", () => {
     customWrap.classList.toggle("hidden", dateRangeEl.value !== "custom");
@@ -334,10 +495,22 @@
     render();
   });
   companyEl.addEventListener("change", render);
+  markFilterEl.addEventListener("change", render);
   includeUnknown.addEventListener("change", render);
   dateFrom.addEventListener("change", render);
   dateTo.addEventListener("change", render);
   scanBtn.addEventListener("click", scan);
 
-  loadCached();
+  (async () => {
+    if (sb) {
+      const { data } = await sb.auth.getSession();
+      await onAuth(data.session);
+      sb.auth.onAuthStateChange((_event, session) => {
+        onAuth(session);
+      });
+    } else {
+      renderAuth();
+    }
+    await loadJobs();
+  })();
 })();

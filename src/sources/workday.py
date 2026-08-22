@@ -8,6 +8,31 @@ from ..filters import parse_relative_posted
 from ..models import Job
 
 
+def _cxs_json(client: httpx.Client, api: str, body: dict[str, Any]) -> dict[str, Any]:
+    # Per-request: a 303 to community.workday.com/maintenance-page has an empty body;
+    # following it yields HTML and json() raises "Expecting value: line 1 column 1".
+    r = client.post(
+        api,
+        json=body,
+        headers={"Accept": "application/json", "Content-Type": "application/json"},
+        follow_redirects=False,
+    )
+    loc = r.headers.get("location") or ""
+    if r.status_code in (301, 302, 303, 307, 308):
+        if "maintenance" in loc.lower() or "community.workday.com" in loc.lower():
+            raise RuntimeError("Workday careers API is in maintenance. Try again later.")
+        raise RuntimeError(f"Workday redirected ({r.status_code}) to {loc}")
+    if not r.content:
+        raise RuntimeError(f"Workday returned empty body (HTTP {r.status_code})")
+    ctype = (r.headers.get("content-type") or "").lower()
+    if "application/json" not in ctype:
+        if "unavailable" in r.text.lower() or "maintenance" in r.text.lower():
+            raise RuntimeError("Workday careers API is in maintenance. Try again later.")
+        raise RuntimeError(f"Workday returned non-JSON ({r.status_code} {ctype or 'unknown'})")
+    r.raise_for_status()
+    return r.json()
+
+
 def fetch_workday(
     client: httpx.Client,
     source_cfg: dict[str, Any],
@@ -41,7 +66,7 @@ def fetch_workday(
             "offset": offset,
             "searchText": keyword,
         }
-        data = client.post(api, json=body).json()
+        data = _cxs_json(client, api, body)
         if total is None:
             total = int(data.get("total") or 0)
         postings = data.get("jobPostings") or []

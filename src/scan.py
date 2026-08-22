@@ -5,10 +5,128 @@ import json
 import pkgutil
 from typing import Any
 
+from pathlib import Path
+
 from .config import ROOT, load_config
 from .filters import dedupe_by_url, passes_filters
 from .http_util import make_client
 from .models import Job, SourceError
+
+REGIONS = ("india", "eu", "infopark")
+
+
+def _data_dir() -> Path:
+    d = ROOT / "data"
+    d.mkdir(parents=True, exist_ok=True)
+    return d
+
+
+def region_jobs_path(region: str) -> Path:
+    return _data_dir() / f"jobs-{region}.json"
+
+
+def _url_key(job: dict[str, Any]) -> str:
+    return (job.get("url") or "").strip().lower().split("?")[0]
+
+
+def split_jobs_by_region(jobs: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
+    buckets: dict[str, list[dict[str, Any]]] = {r: [] for r in REGIONS}
+    for j in jobs:
+        r = j.get("region")
+        if r in buckets:
+            buckets[r].append(j)
+    return buckets
+
+
+def _read_payload(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {"count": 0, "jobs": [], "errors": []}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return {"count": 0, "jobs": [], "errors": []}
+    jobs = data.get("jobs") or []
+    errors = data.get("errors") or []
+    return {"count": len(jobs), "jobs": jobs, "errors": errors}
+
+
+def _write_region(region: str, jobs: list[dict[str, Any]], errors: list[dict[str, str]]) -> None:
+    jobs = sorted(
+        jobs,
+        key=lambda j: (j.get("posted_at") or "", j.get("title") or ""),
+        reverse=True,
+    )
+    payload = {"count": len(jobs), "jobs": jobs, "errors": errors, "region": region}
+    region_jobs_path(region).write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+
+def _source_region_map(cfg: dict[str, Any] | None = None) -> dict[str, str]:
+    cfg = cfg or load_config()
+    return {
+        s["id"]: s.get("region") or ""
+        for s in (cfg.get("sources") or [])
+        if s.get("id")
+    }
+
+
+def _split_errors(
+    errors: list[dict[str, str]], region_map: dict[str, str]
+) -> dict[str, list[dict[str, str]]]:
+    buckets: dict[str, list[dict[str, str]]] = {r: [] for r in REGIONS}
+    for e in errors:
+        r = region_map.get(e.get("source") or "")
+        if r in buckets:
+            buckets[r].append(e)
+    return buckets
+
+
+def migrate_legacy_jobs_json() -> None:
+    """One-shot: split old data/jobs.json into per-region files if none exist yet."""
+    legacy = _data_dir() / "jobs.json"
+    if not legacy.exists():
+        return
+    if any(region_jobs_path(r).exists() for r in REGIONS):
+        return
+    data = _read_payload(legacy)
+    buckets = split_jobs_by_region(data["jobs"])
+    err_buckets = _split_errors(data["errors"], _source_region_map())
+    for r in REGIONS:
+        _write_region(r, buckets[r], err_buckets[r])
+
+
+def load_merged_jobs() -> dict[str, Any]:
+    migrate_legacy_jobs_json()
+    jobs: list[dict[str, Any]] = []
+    errors: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for r in REGIONS:
+        payload = _read_payload(region_jobs_path(r))
+        for j in payload["jobs"]:
+            key = _url_key(j)
+            if not key or key in seen:
+                continue
+            seen.add(key)
+            jobs.append(j)
+        errors.extend(payload["errors"])
+    jobs.sort(key=lambda j: (j.get("posted_at") or "", j.get("title") or ""), reverse=True)
+    return {"count": len(jobs), "jobs": jobs, "errors": errors}
+
+
+def save_jobs_snapshot(
+    jobs: list[dict[str, Any]],
+    errors: list[dict[str, str]],
+    region: str = "all",
+) -> None:
+    region = (region or "all").strip().lower()
+    err_buckets = _split_errors(errors, _source_region_map())
+    if region in REGIONS:
+        jobs = [j for j in jobs if j.get("region") == region]
+        errs = err_buckets[region] if err_buckets[region] else errors
+        _write_region(region, jobs, errs)
+        return
+    buckets = split_jobs_by_region(jobs)
+    for r in REGIONS:
+        _write_region(r, buckets[r], err_buckets[r])
 
 
 def _registry():
@@ -138,21 +256,16 @@ def run_scan(
     jobs = dedupe_by_url(jobs)
     jobs.sort(key=lambda j: (j.posted_at or "", j.title), reverse=True)
 
-    payload = {
-        "count": len(jobs),
-        "jobs": [j.to_dict() for j in jobs],
-        "errors": [e.to_dict() for e in errors],
+    job_dicts = [j.to_dict() for j in jobs]
+    err_dicts = [e.to_dict() for e in errors]
+    scanned = (region or "all").strip().lower()
+    if scanned in REGIONS:
+        save_jobs_snapshot(job_dicts, err_dicts, region=scanned)
+    else:
+        save_jobs_snapshot(job_dicts, err_dicts, region="all")
+
+    return {
+        "count": len(job_dicts),
+        "jobs": job_dicts,
+        "errors": err_dicts,
     }
-
-    out = ROOT / "data" / "jobs.json"
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    return payload
-
-
-def save_jobs_snapshot(jobs: list[dict[str, Any]], errors: list[dict[str, str]]) -> None:
-    jobs = sorted(jobs, key=lambda j: (j.get("posted_at") or "", j.get("title") or ""), reverse=True)
-    payload = {"count": len(jobs), "jobs": jobs, "errors": errors}
-    out = ROOT / "data" / "jobs.json"
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(payload, indent=2), encoding="utf-8")

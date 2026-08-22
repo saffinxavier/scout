@@ -338,8 +338,95 @@ a.apply {
 
 a.apply:hover { filter: brightness(1.08); }
 
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.auth-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+}
+
+.login-form {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.login-form input {
+  font: inherit;
+  font-size: 0.88rem;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg-card);
+  color: var(--ink);
+  min-width: 11rem;
+}
+
+.login-form button,
+.logged-in button {
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.45rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--bg-card);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.logged-in {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.auth-hint {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--warn-ink);
+  max-width: 16rem;
+  text-align: right;
+}
+
+.job-card.is-applied { border-color: rgba(61, 206, 176, 0.45); }
+.job-card.is-hidden { opacity: 0.7; }
+
+.pill.applied { color: var(--ok); border-color: rgba(61, 206, 176, 0.4); }
+.pill.hidden-mark { color: #c9b8e8; border-color: #4a3d68; }
+
+button.ghost {
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+button.ghost:hover {
+  color: var(--ink);
+  border-color: #4a5368;
+}
+
 @media (max-width: 720px) {
   .topbar { flex-direction: column; align-items: stretch; }
+  .top-actions { flex-direction: column; align-items: stretch; }
+  .auth-box, .login-form { align-items: stretch; width: 100%; }
+  .login-form input { min-width: 0; flex: 1; }
+  .auth-hint { text-align: left; max-width: none; }
   #scanBtn { width: 100%; }
   .status { margin-left: 0; width: 100%; }
   .job-card {
@@ -348,5 +435,5 @@ a.apply:hover { filter: brightness(1.08); }
   .job-actions {
     align-items: stretch;
   }
-  a.apply { width: 100%; }
+  a.apply, button.ghost { width: 100%; }
 }

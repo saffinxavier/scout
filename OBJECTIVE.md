@@ -11,7 +11,7 @@ Help **Saffin Xavier** (Kochi, India; Indian national; **3.5+ years**; **B.Tech 
 Local Flask app + scrapers that aggregate jobs onto **one dark job-board page**.
 
 ### Regions / sources
-- **India:** JPMorgan, Citi, PwC (Workday), Deloitte (**South Asia** careers / RSS — not US `apply.deloitte.com`), GS/MS/EY/KPMG best-effort HTML
+- **India:** JPMorgan, Citi (`jobs.citi.com`), PwC (Workday), Deloitte (**South Asia** careers / RSS — not US `apply.deloitte.com`), GS/MS/EY/KPMG best-effort HTML
 - **Europe:** Relocate.me, Jaabz, Welcome NL, Arbeitnow, Remotive (sponsorship board or keyword)
 - **Infopark:** `infopark.in/companies-job` (all pages); skips Java/seniority gates so local board is browsable
 
@@ -28,6 +28,8 @@ Local Flask app + scrapers that aggregate jobs onto **one dark job-board page**.
 - Default **Posted = last 24 hours**
 - Filters: region (with counts), company (with counts), date range
 - Apply link per job
+- Job cache is **per region** (`data/jobs-india.json`, `jobs-eu.json`, `jobs-infopark.json`). Scan one region without wiping the others. **All** shows the merged list.
+- Hosted board: GitHub Pages + Action scan (no Scan in the browser). Applied/Hidden via Supabase login.
 
 ## How to run
 ```bash

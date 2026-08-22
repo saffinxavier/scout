@@ -101,25 +101,8 @@ sources:
     enabled: true
     region: india
     company: Citi
-    workday:
-      tenant: citi
-      shard: wd5
-      site: "2"
-      keyword: Java
-      max_results: 500
-      # Prefer India locations; remote also kept by filter.
-      location_substr:
-        - india
-        - mumbai
-        - bengaluru
-        - bangalore
-        - hyderabad
-        - pune
-        - chennai
-        - gurgaon
-        - gurugram
-        - noida
-        - remote
+    keyword: Java
+    # jobs.citi.com (Phenom). Workday CXS (citi.wd5) currently 303s to maintenance.
 
   - id: goldman_sachs
     enabled: true

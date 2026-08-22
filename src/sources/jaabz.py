@@ -70,7 +70,7 @@ def fetch(client: httpx.Client, source_cfg: dict[str, Any], app_cfg: dict[str, A
                     source=SOURCE_ID,
                     region="eu",
                     sponsorship=True,
-                    description=f"{title} java spring boot visa sponsorship",
+                    description=title,
                 )
             )
         if len(seen) == before:

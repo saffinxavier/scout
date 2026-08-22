@@ -4,7 +4,7 @@ from pathlib import Path
 
 from flask import Flask, jsonify, request, send_from_directory
 
-from .scan import list_sources, run_scan, save_jobs_snapshot, scan_one
+from .scan import list_sources, load_merged_jobs, run_scan, save_jobs_snapshot, scan_one
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT / "web"
@@ -22,9 +22,9 @@ def app_js():
     return send_from_directory(WEB, "app.js")
 
 
-@app.get("/style.css")
-def style_css():
-    return send_from_directory(WEB, "style.css")
+@app.get("/config.js")
+def config_js():
+    return send_from_directory(WEB, "config.js")
 
 
 @app.get("/api/sources")
@@ -63,16 +63,17 @@ def api_jobs_save():
     body = request.get_json(silent=True) or {}
     jobs = body.get("jobs") or []
     errors = body.get("errors") or []
-    save_jobs_snapshot(jobs, errors)
-    return jsonify({"ok": True, "count": len(jobs)})
+    region = (body.get("region") or "all").strip().lower()
+    save_jobs_snapshot(jobs, errors, region=region)
+    return jsonify({"ok": True, "count": len(jobs), "region": region})
 
 
 @app.get("/api/jobs")
 def api_jobs():
-    path = ROOT / "data" / "jobs.json"
-    if not path.exists():
-        return jsonify({"count": 0, "jobs": [], "errors": [], "message": "No scan yet. Click Scan now."})
-    return path.read_text(encoding="utf-8"), 200, {"Content-Type": "application/json"}
+    payload = load_merged_jobs()
+    if not payload["jobs"]:
+        payload["message"] = "No scan yet. Click Scan now."
+    return jsonify(payload)
 
 
 def main():

@@ -12,8 +12,14 @@ Last updated: 2026-08-22
 - [x] Default Posted filter = last 24 hours
 - [x] Region/company dropdown counts; scan button spinner
 - [x] `OBJECTIVE.md` + `PROGRESS.md` for chat handoff
+- [x] Citi: Phenom `jobs.citi.com` (Workday CXS was 303 → maintenance HTML / empty JSON)
+- [x] Per-region job files; All = merged list (India scan no longer wipes EU/Infopark)
+- [x] EU boards (Jaabz / Relocate / Welcome NL): no fake java/visa text in description; Java/Spring must be in the real title
+- [x] GitHub Pages + Action publish; Applied/Hidden in Supabase (email magic link)
 
 ## Known limitations
+- PwC still uses Workday CXS; when Workday is in maintenance the source fails with a clear error (no public Phenom board)
+- Citi list pages have no posted date — jobs show as date-unknown (toggle “include unknown”)
 - GS / Morgan Stanley / EY / KPMG HTML scrapers remain fragile (JS career sites)
 - Arbeitnow may rate-limit (429) after several pages — adapter keeps partial results
 - Relocate.me search `?page=` is a no-op; intl board pages are used instead
@@ -23,8 +29,7 @@ Last updated: 2026-08-22
 ## Next ideas (not started)
 - [ ] Fetch Infopark/Workday job detail for better year/degree detection
 - [ ] EY/KPMG/GS dedicated APIs if public endpoints found
-- [ ] GitHub Pages + Actions mirror
-- [ ] Optional “Applied” status tracking
+- [ ] Warn when HTML adapters return 0 jobs with no error
 
 ## Key paths
 - Config: `config.yaml`

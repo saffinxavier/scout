@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from .filters import dedupe_by_url, inferred_min_years, passes_filters
 from .models import Job
+from .sources.citi import _parse_results_html
 
 BOARDS = {"relocate_me", "jaabz"}
 EDU = ["master's", "masters", "m.tech", "mtech", "mba", "m.s", "postgraduate"]
@@ -136,6 +137,29 @@ def main() -> None:
         ]
     )
     assert len(deduped) == 2
+
+    from .scan import split_jobs_by_region
+
+    split = split_jobs_by_region(
+        [
+            {"region": "india", "url": "a"},
+            {"region": "eu", "url": "b"},
+            {"region": "infopark", "url": "c"},
+            {"region": "eu", "url": "d"},
+            {"region": "other", "url": "e"},
+        ]
+    )
+    assert [j["url"] for j in split["india"]] == ["a"]
+    assert [j["url"] for j in split["eu"]] == ["b", "d"]
+    assert [j["url"] for j in split["infopark"]] == ["c"]
+
+    rows, pages = _parse_results_html(
+        '<section id="search-results" data-total-pages="3"></section>'
+        '<li class="sr-job-item"><h3><a class="sr-job-item__link" '
+        'href="/job/pune/java-dev/287/1">Java Dev</a></h3>'
+        '<span class="sr-job-location">Pune, India</span></li>'
+    )
+    assert pages == 3 and rows[0][0] == "Java Dev" and "pune" in rows[0][1]
 
     print("check_filters: ok")
 
