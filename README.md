@@ -72,7 +72,7 @@ Jobs are a static site on GitHub Pages. Scan runs on GitHub (Actions), not in th
 
 1. Supabase → **SQL Editor** → paste and run [`supabase/schema.sql`](supabase/schema.sql).
 2. GitHub repo → **Settings** → **Pages** → **Source** = **GitHub Actions**.
-3. Push this repo, then **Actions** → **Scan and publish** → **Run workflow**.
+3. Push to **main** — **Scan and publish** runs automatically. You can still **Actions** → **Run workflow** anytime.
 
 Site URL: [https://saffinxavier.github.io/scout/](https://saffinxavier.github.io/scout/)
 
