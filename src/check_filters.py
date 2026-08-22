@@ -135,6 +135,30 @@ def main() -> None:
     )
     assert keep_btech is not None
 
+    from .sources import ey as ey_src
+
+    keep_ey = ey_src._is_india_job(
+        _j(
+            title="Java Developer",
+            source="ey",
+            region="india",
+            url="https://careers.ey.com/ey/job/Bengaluru-Java-KA-560001/1/",
+            location="Bengaluru",
+        )
+    )
+    assert keep_ey is True
+    drop_ey_us = ey_src._is_india_job(
+        _j(
+            title="Java Developer",
+            source="ey",
+            region="india",
+            url="https://careers.ey.com/ey/job/New-York-Java-NY-10001/1/",
+            location="New York, United States",
+            description="United States",
+        )
+    )
+    assert drop_ey_us is False
+
     deduped = dedupe_by_url(
         [
             _j(url="https://x.com/a?ref=1"),

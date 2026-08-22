@@ -24,11 +24,13 @@ Last updated: 2026-08-22
 - [x] GS / Morgan Stanley / EY / KPMG set `enabled: false` (dead HTML boards)
 - [x] Search lives in the filters panel; Flag mark; phone icon buttons (sign out / scan / filters)
 - [x] Sources info dialog (on vs off); scan progress is not dumped in the status line
+- [x] KPMG Oracle HCM (CX_3001 + CX_3); EY RSS + India gate (SuccessFactors HTML still unused)
 
 ## Known limitations
 - PwC still uses Workday CXS; when Workday is in maintenance the source fails with a clear error (no public Phenom board)
 - Citi list pages have no posted date — jobs show as date-unknown (toggle “include unknown”)
-- GS / Morgan Stanley / EY / KPMG HTML scrapers are **disabled** (`enabled: false`); re-enable when a public API exists
+- GS / Morgan Stanley stay **disabled** (no public JSON search)
+- KPMG Oracle titles are often generic (`Consultant`); adapter fetches each JD so Java/years filters can run
 - Welcome NL (`welcome_nl`) is **disabled**: `welcometothenetherlands.com/vacatures/` redirects to Everaert internships; `welcome-to-nl.nl/jobs` currently shows 0 jobs
 - Arbeitnow may rate-limit (429) after several pages — adapter keeps partial results
 - Relocate.me search `?page=` is a no-op; intl board pages are used instead
@@ -36,9 +38,9 @@ Last updated: 2026-08-22
 - Infopark detail pretty-URLs (`/jobs/...`) map to list URLs (`/company-jobs/details/...`)
 
 ## Next ideas (not started)
-- [ ] Fetch Infopark/Workday job detail for better year/degree detection
+- [ ] Fetch Infopark/Workday/KPMG job detail for better year/degree/Java detection
 - [ ] Source health line (jobs per source)
-- [ ] EY/KPMG/GS dedicated APIs if public endpoints found; then re-enable in config
+- [ ] GS JSON search if a public endpoint appears
 - [ ] Filter sheet focus trap
 
 ## Key paths

@@ -11,7 +11,7 @@ Help **Saffin Xavier** (Kochi, India; Indian national; **3.5+ years**; **B.Tech 
 Local Flask app + scrapers that aggregate jobs onto **one dark job-board page**.
 
 ### Regions / sources
-- **India:** JPMorgan, Citi (`jobs.citi.com`), PwC (Workday), Deloitte (**South Asia** careers / RSS — not US `apply.deloitte.com`); GS/MS/EY/KPMG off until APIs exist
+- **India:** JPMorgan, Citi (`jobs.citi.com`), PwC (Workday), Deloitte (South Asia RSS), EY (careers.ey.com RSS + India gate), KPMG (Oracle CX_3001 + CX_3). GS/MS still off (no JSON search)
 - **Europe:** Relocate.me, Jaabz, Arbeitnow, Remotive (sponsorship board or keyword). Welcome NL is **disabled** (old URL is a law firm; official board currently empty)
 - **Infopark:** `infopark.in/companies-job` (all pages); skips Java/seniority gates so local board is browsable
 
@@ -22,7 +22,7 @@ Local Flask app + scrapers that aggregate jobs onto **one dark job-board page**.
 - Drop Masters/MBA/M.Tech **requirements**
 - India/EU seniority excludes: AVP, VP, principal, staff, architect, director (Lead titles allowed; **word-boundary** match so “architecture” is not dropped)
 - Infopark: no Java/Spring or seniority gate
-- **GS / Morgan Stanley / EY / KPMG** HTML sources are **disabled** until a real API exists (still in config)
+- **GS / Morgan Stanley** HTML sources stay **disabled** until a JSON search exists
 
 ### UX
 - Dark-only job cards; Scan streams **one source at a time** for the **selected region** (not all sources if region filtered)

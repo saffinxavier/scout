@@ -156,19 +156,23 @@ sources:
         - remote
 
   - id: ey
-    enabled: false
+    enabled: true
     region: india
     company: EY
-    note: HTML career site, no public API
+    rss_url: "https://careers.ey.com/services/rss/job/?locale=en_US&keywords=(Java)%20AND%20locationSearch:(India)"
     search_url: "https://careers.ey.com/ey/search/?q=Java&location=India"
+    max_pages: 8
 
   - id: kpmg
-    enabled: false
+    enabled: true
     region: india
     company: KPMG
-    note: HTML career site, no public API
-    # Marketing career hub (JS job board has no stable public API yet).
-    search_url: "https://kpmg.com/in/en/careers/experienced-professionals.html"
+    keyword: Java
+    oracle:
+      host: ejgk.fa.em2.oraclecloud.com
+      sites:
+        - CX_3001
+        - CX_3
 
 http:
   timeout_seconds: 30
