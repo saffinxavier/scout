@@ -15,7 +15,6 @@
   <main id="authScreen" class="auth-screen" aria-labelledby="authTitle">
     <div class="auth-card card">
       <div class="brand brand-auth">
-        <span class="logo" aria-hidden="true"></span>
         <div>
           <h1 id="authTitle">Scout</h1>
           <p class="sub">Sign in to your listings</p>
@@ -40,7 +39,6 @@
     <div class="shell">
       <header class="topbar">
         <div class="brand">
-          <span class="logo" aria-hidden="true"></span>
           <div>
             <h1>Scout</h1>
             <p class="sub">Java / Spring · India · Europe · Infopark</p>
@@ -49,7 +47,7 @@
         <div class="top-actions">
           <span id="userEmail" class="user-email"></span>
           <button id="signOutBtn" class="btn btn-ghost" type="button">Sign out</button>
-          <button id="scanBtn" class="btn btn-outline hidden" type="button">
+          <button id="scanBtn" class="btn btn-outline" type="button">
             <span class="scan-spinner" aria-hidden="true"></span>
             <span class="scan-label">Scan now</span>
           </button>
@@ -65,10 +63,12 @@
 
       <div id="filterBackdrop" class="sheet-backdrop hidden" hidden></div>
       <section id="filtersPanel" class="filters" aria-label="Filters">
+        <div class="sheet-handle" aria-hidden="true"></div>
         <div class="filters-head">
           <h2 class="filters-title">Filters</h2>
-          <button id="filterDone" class="btn btn-primary filter-done" type="button">Done</button>
+          <button id="filterClose" class="btn btn-ghost filter-close" type="button">Close</button>
         </div>
+        <div class="filters-body">
         <label class="field">
           Region
           <select id="region">
@@ -104,7 +104,7 @@
           </select>
         </label>
         <label class="field custom-dates hidden" id="customWrap">
-          <span class="custom-dates-label">Range</span>
+          <span class="custom-dates-label">Custom dates</span>
           <span class="custom-dates-row">
             <input type="date" id="dateFrom" aria-label="From date" />
             <input type="date" id="dateTo" aria-label="To date" />
@@ -112,8 +112,12 @@
         </label>
         <label class="check">
           <input type="checkbox" id="includeUnknownDate" checked />
-          Show unknown dates
+          Show jobs with unknown dates
         </label>
+        </div>
+        <div class="filters-foot">
+          <button id="filterDone" class="btn btn-primary btn-block filter-done" type="button">Show results</button>
+        </div>
       </section>
 
       <section id="errors" class="banner hidden" aria-live="polite"></section>

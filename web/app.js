@@ -24,6 +24,7 @@
   const signOutBtn = document.getElementById("signOutBtn");
   const filterToggle = document.getElementById("filterToggle");
   const filterDone = document.getElementById("filterDone");
+  const filterClose = document.getElementById("filterClose");
   const filterBackdrop = document.getElementById("filterBackdrop");
 
   const REGION_LABELS = {
@@ -387,7 +388,19 @@
   }
 
   async function scan() {
-    if (!localApi) return;
+    if (!localApi) {
+      setScanning(true);
+      try {
+        jobsLoaded = false;
+        await loadJobs();
+        setStatus(
+          `${jobs.length} from last GitHub publish · a full scan runs when you push to main (or Actions → Run workflow)`
+        );
+      } finally {
+        setScanning(false);
+      }
+      return;
+    }
     setScanning(true);
     const scanRegion = regionEl.value || "all";
     if (scanRegion === "all") {
@@ -470,7 +483,6 @@
           localApi = true;
           jobs = data.jobs;
           jobsLoaded = true;
-          scanBtn.classList.remove("hidden");
           if (jobs.length) showErrors(data.errors || []);
           render();
           return;
@@ -480,7 +492,6 @@
       /* hosted */
     }
     localApi = false;
-    scanBtn.classList.add("hidden");
     try {
       const res = await fetch("jobs.json");
       const data = await res.json();
@@ -539,6 +550,7 @@
 
   filterToggle.addEventListener("click", openFilters);
   filterDone.addEventListener("click", closeFilters);
+  if (filterClose) filterClose.addEventListener("click", closeFilters);
   filterBackdrop.addEventListener("click", closeFilters);
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeFilters();

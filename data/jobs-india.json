@@ -1,5 +1,5 @@
 {
-  "count": 142,
+  "count": 149,
   "jobs": [
     {
       "company": "Deloitte",
@@ -365,6 +365,28 @@
       "url": "https://jpmc.fa.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/job/210752165"
     },
     {
+      "company": "PwC",
+      "description": "IN_Senior Associate_Java, springboot, Microservices_GCC_Advisory_Bangalore",
+      "location": "Bengaluru Millenia",
+      "posted_at": "2026-08-14",
+      "region": "india",
+      "source": "pwc",
+      "sponsorship": false,
+      "title": "IN_Senior Associate_Java, springboot, Microservices_GCC_Advisory_Bangalore",
+      "url": "https://pwc.wd3.myworkdayjobs.com/Global_Experienced_Careers/job/Bengaluru-Millenia/IN-Senior-Associate-QA-Automation-GCC-Advisory-Bangalore_712692WD-1"
+    },
+    {
+      "company": "PwC",
+      "description": "IN_Associate_ Java Backend Developer_GCC_Advisory_Bangalore",
+      "location": "Bengaluru Millenia",
+      "posted_at": "2026-08-14",
+      "region": "india",
+      "source": "pwc",
+      "sponsorship": false,
+      "title": "IN_Associate_ Java Backend Developer_GCC_Advisory_Bangalore",
+      "url": "https://pwc.wd3.myworkdayjobs.com/Global_Experienced_Careers/job/Bengaluru-Millenia/IN-Senior-Associate--Java-Backend-Developer-GCC-Advisory-Bangalore_746227WD-1"
+    },
+    {
       "company": "JPMorgan Chase",
       "description": "Lead Software Engineer - Java/ Python Fullstack",
       "location": "Bengaluru, Karnataka, India",
@@ -506,6 +528,17 @@
       "sponsorship": false,
       "title": "Lead Software Engineer - Java, AWS, kdb+",
       "url": "https://jpmc.fa.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/job/210771257"
+    },
+    {
+      "company": "PwC",
+      "description": "IN_Senior Associate_AI Engineer (Java Microservices Focus) _GCC_Advisory_Bangalore",
+      "location": "Bengaluru Millenia",
+      "posted_at": "2026-07-24",
+      "region": "india",
+      "source": "pwc",
+      "sponsorship": false,
+      "title": "IN_Senior Associate_AI Engineer (Java Microservices Focus) _GCC_Advisory_Bangalore",
+      "url": "https://pwc.wd3.myworkdayjobs.com/Global_Experienced_Careers/job/Bengaluru-Millenia/IN-Senior-Associate-AI-Engineer--Java-Microservices-Focus---GCC-Advisory-Bangalore_746674WD-1"
     },
     {
       "company": "JPMorgan Chase",
@@ -1344,6 +1377,17 @@
       "url": "https://southasiacareers.deloitte.com/job/Bengaluru-Java-%2B-Angular-Bengaluru-Engineering/57517744/"
     },
     {
+      "company": "PwC",
+      "description": "JAVA FULL STACK DEVELOPER -Consultant -Gurugram",
+      "location": "Gurugram 10 C",
+      "posted_at": null,
+      "region": "india",
+      "source": "pwc",
+      "sponsorship": false,
+      "title": "JAVA FULL STACK DEVELOPER -Consultant -Gurugram",
+      "url": "https://pwc.wd3.myworkdayjobs.com/Global_Experienced_Careers/job/Gurugram-10-C/JAVA-FULL-STACK-DEVELOPER---Senior-Consultant---Bangalore_524583WD"
+    },
+    {
       "company": "Citi",
       "description": "ISG Developer Java",
       "location": "Multiple Locations",
@@ -1353,6 +1397,39 @@
       "sponsorship": false,
       "title": "ISG Developer Java",
       "url": "https://jobs.citi.com/job/chennai/isg-developer-java/287/97177041392"
+    },
+    {
+      "company": "PwC",
+      "description": "IN_Senior Associate_ Java Full Stack_GCC_Advisory_Bangalore",
+      "location": "Bengaluru Millenia",
+      "posted_at": null,
+      "region": "india",
+      "source": "pwc",
+      "sponsorship": false,
+      "title": "IN_Senior Associate_ Java Full Stack_GCC_Advisory_Bangalore",
+      "url": "https://pwc.wd3.myworkdayjobs.com/Global_Experienced_Careers/job/Bengaluru-Millenia/IN-Senior-Associate-MERN-Developer-GCC-Advisory-Bangalore_740284WD"
+    },
+    {
+      "company": "PwC",
+      "description": "IN-Senior Associate_ Java/IT _Utility transformation _Advisory_MUMBAI",
+      "location": "Mumbai Shivaji Park",
+      "posted_at": null,
+      "region": "india",
+      "source": "pwc",
+      "sponsorship": false,
+      "title": "IN-Senior Associate_ Java/IT _Utility transformation _Advisory_MUMBAI",
+      "url": "https://pwc.wd3.myworkdayjobs.com/Global_Experienced_Careers/job/Mumbai-Shivaji-Park/IN-Associate-Energy-Utility-Transformation-Advisory-Gurgaon_570611WD-1"
+    },
+    {
+      "company": "PwC",
+      "description": "IN-Senior Associate_ Java Developers_ Advisory Corporate_Advisory_Bangalore",
+      "location": "Bengaluru Millenia",
+      "posted_at": null,
+      "region": "india",
+      "source": "pwc",
+      "sponsorship": false,
+      "title": "IN-Senior Associate_ Java Developers_ Advisory Corporate_Advisory_Bangalore",
+      "url": "https://pwc.wd3.myworkdayjobs.com/Global_Experienced_Careers/job/Bengaluru-Millenia/IN-Senior-Associate--Java-Developers--Advisory-Corporate-Advisory-Bangalore_581714WD-1"
     },
     {
       "company": "Citi",
@@ -1564,11 +1641,6 @@
       "url": "https://southasiacareers.deloitte.com/job/Gurugram-Analyst-Java-Developer-Gurugram-Customer-Strategy-&-Design/58758944/"
     }
   ],
-  "errors": [
-    {
-      "message": "Workday careers API is in maintenance. Try again later.",
-      "source": "pwc"
-    }
-  ],
+  "errors": [],
   "region": "india"
 }
