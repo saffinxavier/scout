@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Scout — Job listings</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -10,89 +10,120 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="shell">
-    <header class="topbar">
-      <div class="brand">
+  <a class="skip-link" href="#results">Skip to listings</a>
+
+  <main id="authScreen" class="auth-screen" aria-labelledby="authTitle">
+    <div class="auth-card card">
+      <div class="brand brand-auth">
         <span class="logo" aria-hidden="true"></span>
         <div>
-          <h1>Scout</h1>
-          <p class="sub">Java / Spring Boot · India · Europe · Infopark</p>
+          <h1 id="authTitle">Scout</h1>
+          <p class="sub">Sign in to your listings</p>
         </div>
       </div>
-      <div class="top-actions">
-        <div id="authBox" class="auth-box">
-          <form id="loginForm" class="login-form">
-            <input id="loginEmail" type="email" required placeholder="Email" autocomplete="email" />
-            <button type="submit">Email link</button>
-          </form>
-          <p id="loginHint" class="auth-hint hidden"></p>
-          <div id="loggedIn" class="logged-in hidden">
-            <span id="userEmail"></span>
-            <button id="signOutBtn" type="button">Sign out</button>
+      <form id="loginForm" class="auth-form">
+        <label class="field">
+          Email
+          <input id="loginEmail" type="email" name="email" required autocomplete="username" />
+        </label>
+        <label class="field">
+          Password
+          <input id="loginPassword" type="password" name="password" required minlength="8" autocomplete="current-password" />
+        </label>
+        <p id="loginError" class="field-error" role="alert" hidden></p>
+        <button id="loginSubmit" class="btn btn-primary btn-block" type="submit">Sign in</button>
+      </form>
+    </div>
+  </main>
+
+  <div id="appShell" class="app-shell hidden">
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="logo" aria-hidden="true"></span>
+          <div>
+            <h1>Scout</h1>
+            <p class="sub">Java / Spring · India · Europe · Infopark</p>
           </div>
         </div>
-        <button id="scanBtn" type="button">
-          <span class="scan-spinner" aria-hidden="true"></span>
-          <span class="scan-label">Scan now</span>
+        <div class="top-actions">
+          <span id="userEmail" class="user-email"></span>
+          <button id="signOutBtn" class="btn btn-ghost" type="button">Sign out</button>
+          <button id="scanBtn" class="btn btn-outline hidden" type="button">
+            <span class="scan-spinner" aria-hidden="true"></span>
+            <span class="scan-label">Scan now</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="filter-bar">
+        <button id="filterToggle" class="btn btn-ghost filter-toggle" type="button" aria-expanded="false" aria-controls="filtersPanel">
+          Filters
         </button>
+        <p id="status" class="status" role="status"></p>
       </div>
-    </header>
 
-    <section class="filters" aria-label="Filters">
-      <label>
-        Region
-        <select id="region">
-          <option value="all">All</option>
-          <option value="india">India</option>
-          <option value="eu">Europe</option>
-          <option value="infopark">Infopark</option>
-        </select>
-      </label>
-      <label>
-        Company
-        <select id="company">
-          <option value="all">All companies</option>
-        </select>
-      </label>
-      <label>
-        Posted
-        <select id="dateRange">
-          <option value="all">Any time</option>
-          <option value="24h" selected>Last 24 hours</option>
-          <option value="48h">Last 48 hours</option>
-          <option value="7d">Last 7 days</option>
-          <option value="custom">Custom range</option>
-        </select>
-      </label>
-      <label>
-        Status
-        <select id="markFilter">
-          <option value="open" selected>Open</option>
-          <option value="applied">Applied</option>
-          <option value="hidden">Hidden</option>
-          <option value="all">All</option>
-        </select>
-      </label>
-      <label class="custom-dates hidden" id="customWrap">
-        From
-        <input type="date" id="dateFrom" />
-        To
-        <input type="date" id="dateTo" />
-      </label>
-      <label class="check">
-        <input type="checkbox" id="includeUnknownDate" checked />
-        Show unknown dates
-      </label>
-      <p id="status" class="status" role="status"></p>
-    </section>
+      <div id="filterBackdrop" class="sheet-backdrop hidden" hidden></div>
+      <section id="filtersPanel" class="filters" aria-label="Filters">
+        <div class="filters-head">
+          <h2 class="filters-title">Filters</h2>
+          <button id="filterDone" class="btn btn-primary filter-done" type="button">Done</button>
+        </div>
+        <label class="field">
+          Region
+          <select id="region">
+            <option value="all">All</option>
+            <option value="india">India</option>
+            <option value="eu">Europe</option>
+            <option value="infopark">Infopark</option>
+          </select>
+        </label>
+        <label class="field">
+          Company
+          <select id="company">
+            <option value="all">All companies</option>
+          </select>
+        </label>
+        <label class="field">
+          Posted
+          <select id="dateRange">
+            <option value="all">Any time</option>
+            <option value="24h" selected>Last 24 hours</option>
+            <option value="48h">Last 48 hours</option>
+            <option value="7d">Last 7 days</option>
+            <option value="custom">Custom range</option>
+          </select>
+        </label>
+        <label class="field">
+          Status
+          <select id="markFilter">
+            <option value="open" selected>Open</option>
+            <option value="applied">Applied</option>
+            <option value="hidden">Hidden</option>
+            <option value="all">All</option>
+          </select>
+        </label>
+        <label class="field custom-dates hidden" id="customWrap">
+          <span class="custom-dates-label">Range</span>
+          <span class="custom-dates-row">
+            <input type="date" id="dateFrom" aria-label="From date" />
+            <input type="date" id="dateTo" aria-label="To date" />
+          </span>
+        </label>
+        <label class="check">
+          <input type="checkbox" id="includeUnknownDate" checked />
+          Show unknown dates
+        </label>
+      </section>
 
-    <section id="errors" class="errors hidden" aria-live="polite"></section>
+      <section id="errors" class="banner hidden" aria-live="polite"></section>
 
-    <section id="results" class="results" aria-live="polite">
-      <div class="empty-state" id="emptyState">
-        <p>Loading listings…</p>
-      </div>
-    </section>
+      <section id="results" class="results" aria-live="polite">
+        <div class="empty-state" id="emptyState">
+          <p>Loading listings…</p>
+        </div>
+      </section>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.js"></script>

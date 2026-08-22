@@ -29,7 +29,7 @@ Local Flask app + scrapers that aggregate jobs onto **one dark job-board page**.
 - Filters: region (with counts), company (with counts), date range
 - Apply link per job
 - Job cache is **per region** (`data/jobs-india.json`, `jobs-eu.json`, `jobs-infopark.json`). Scan one region without wiping the others. **All** shows the merged list.
-- Hosted board: GitHub Pages + Action scan (no Scan in the browser). Applied/Hidden via Supabase login.
+- Hosted board: GitHub Pages + Action scan (no Scan in the browser). Gated email+password login (Supabase). Applied/Hidden per user. Passwords created/reset in the Dashboard only.
 
 ## How to run
 ```bash

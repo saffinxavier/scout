@@ -15,7 +15,9 @@ Last updated: 2026-08-22
 - [x] Citi: Phenom `jobs.citi.com` (Workday CXS was 303 → maintenance HTML / empty JSON)
 - [x] Per-region job files; All = merged list (India scan no longer wipes EU/Infopark)
 - [x] EU boards (Jaabz / Relocate / Welcome NL): no fake java/visa text in description; Java/Spring must be in the real title
-- [x] GitHub Pages + Action publish; Applied/Hidden in Supabase (email magic link)
+- [x] GitHub Pages + Action publish; Applied/Hidden in Supabase
+- [x] Gated email+password login (no magic link / no in-app reset); Dashboard-only users
+- [x] Auth screen + mobile filter sheet + board UI polish
 
 ## Known limitations
 - PwC still uses Workday CXS; when Workday is in maintenance the source fails with a clear error (no public Phenom board)

@@ -1,4 +1,6 @@
 (() => {
+  const authScreen = document.getElementById("authScreen");
+  const appShell = document.getElementById("appShell");
   const scanBtn = document.getElementById("scanBtn");
   const scanLabel = scanBtn.querySelector(".scan-label");
   const results = document.getElementById("results");
@@ -15,10 +17,14 @@
   const includeUnknown = document.getElementById("includeUnknownDate");
   const loginForm = document.getElementById("loginForm");
   const loginEmail = document.getElementById("loginEmail");
-  const loginHint = document.getElementById("loginHint");
-  const loggedIn = document.getElementById("loggedIn");
+  const loginPassword = document.getElementById("loginPassword");
+  const loginError = document.getElementById("loginError");
+  const loginSubmit = document.getElementById("loginSubmit");
   const userEmail = document.getElementById("userEmail");
   const signOutBtn = document.getElementById("signOutBtn");
+  const filterToggle = document.getElementById("filterToggle");
+  const filterDone = document.getElementById("filterDone");
+  const filterBackdrop = document.getElementById("filterBackdrop");
 
   const REGION_LABELS = {
     all: "All",
@@ -27,13 +33,16 @@
     infopark: "Infopark",
   };
 
+  const cfg = window.SCOUT || {};
+  const minLen = Number(cfg.passwordMinLength) || 8;
+
   let jobs = [];
-  let marks = {}; // urlKey -> applied | hidden
+  let marks = {};
   let localApi = false;
   let sessionUser = null;
+  let jobsLoaded = false;
   let sb = null;
 
-  const cfg = window.SCOUT || {};
   if (window.supabase && cfg.supabaseUrl && cfg.supabaseAnonKey) {
     sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
   }
@@ -77,6 +86,39 @@
       .replaceAll('"', "&quot;");
   }
 
+  function showLoginError(msg) {
+    if (!msg) {
+      loginError.hidden = true;
+      loginError.textContent = "";
+      return;
+    }
+    loginError.hidden = false;
+    loginError.textContent = msg;
+  }
+
+  function authMessage(err) {
+    const t = String((err && err.message) || err || "").toLowerCase();
+    if (t.includes("rate") || t.includes("too many")) return "Too many attempts. Wait a moment and try again.";
+    if (t.includes("invalid") || t.includes("credential") || t.includes("password")) {
+      return "Email or password is wrong.";
+    }
+    return "Could not sign in. Try again.";
+  }
+
+  function openFilters() {
+    document.body.classList.add("filters-open");
+    filterBackdrop.hidden = false;
+    filterBackdrop.classList.remove("hidden");
+    filterToggle.setAttribute("aria-expanded", "true");
+  }
+
+  function closeFilters() {
+    document.body.classList.remove("filters-open");
+    filterBackdrop.hidden = true;
+    filterBackdrop.classList.add("hidden");
+    filterToggle.setAttribute("aria-expanded", "false");
+  }
+
   function startOfDay(d) {
     return new Date(d.getFullYear(), d.getMonth(), d.getDate());
   }
@@ -92,9 +134,7 @@
     const mode = dateRangeEl.value;
     const posted = parseISODate(job.posted_at);
     if (!posted) return includeUnknown.checked;
-
     if (mode === "all") return true;
-
     const today = startOfDay(new Date());
     if (mode === "24h") {
       const from = new Date(today);
@@ -171,11 +211,6 @@
     }
   }
 
-  function rebuildFilterCounts() {
-    rebuildRegionOptions();
-    rebuildCompanyOptions();
-  }
-
   function titlePriority(job) {
     const t = String(job.title || "").toLowerCase();
     let score = 0;
@@ -220,20 +255,31 @@
     return "region-india";
   }
 
+  function showGate(on) {
+    if (on) {
+      authScreen.classList.remove("hidden");
+      appShell.classList.add("hidden");
+    } else {
+      authScreen.classList.add("hidden");
+      appShell.classList.remove("hidden");
+    }
+  }
+
   function renderAuth() {
     if (sessionUser) {
-      loginForm.classList.add("hidden");
-      loggedIn.classList.remove("hidden");
+      showGate(false);
       userEmail.textContent = sessionUser.email || "Signed in";
-      loginHint.classList.add("hidden");
     } else {
-      loginForm.classList.remove("hidden");
-      loggedIn.classList.add("hidden");
+      showGate(true);
+      userEmail.textContent = "";
+      closeFilters();
     }
   }
 
   function render() {
-    rebuildFilterCounts();
+    if (!sessionUser) return;
+    rebuildRegionOptions();
+    rebuildCompanyOptions();
     const rows = filtered();
     const cards = results.querySelectorAll(".job-card");
     cards.forEach((el) => el.remove());
@@ -242,7 +288,7 @@
       emptyState.classList.remove("hidden");
       emptyState.innerHTML = localApi
         ? `<p>Click <strong>Scan now</strong> to fetch listings that fit your profile.</p>`
-        : `<p>No listings yet. On GitHub, open <strong>Actions</strong> → <strong>Scan and publish</strong> → Run workflow.</p>`;
+        : `<p>No listings yet. On GitHub: <strong>Actions</strong> → <strong>Scan and publish</strong> → Run workflow.</p>`;
       setStatus("");
       return;
     }
@@ -287,9 +333,11 @@
         </div>
         <div class="job-actions">
           <a class="apply" href="${escapeHtml(j.url)}" target="_blank" rel="noopener noreferrer">Apply</a>
-          <button type="button" class="ghost" data-mark="applied" data-url="${escapeHtml(key)}">Applied</button>
-          <button type="button" class="ghost" data-mark="hidden" data-url="${escapeHtml(key)}">Hide</button>
-          ${st ? `<button type="button" class="ghost" data-mark="" data-url="${escapeHtml(key)}">Clear</button>` : ""}
+          <div class="action-row">
+            <button type="button" class="btn btn-ghost btn-sm" data-mark="applied" data-url="${escapeHtml(key)}">Applied</button>
+            <button type="button" class="btn btn-ghost btn-sm" data-mark="hidden" data-url="${escapeHtml(key)}">Hide</button>
+            ${st ? `<button type="button" class="btn btn-ghost btn-sm" data-mark="" data-url="${escapeHtml(key)}">Clear</button>` : ""}
+          </div>
         </div>`;
       frag.appendChild(article);
     });
@@ -311,16 +359,7 @@
   }
 
   async function setMark(key, state) {
-    if (!sb) {
-      loginHint.textContent = "Supabase config missing.";
-      loginHint.classList.remove("hidden");
-      return;
-    }
-    if (!sessionUser) {
-      loginHint.textContent = "Sign in with email first (check your inbox for the link).";
-      loginHint.classList.remove("hidden");
-      return;
-    }
+    if (!sb || !sessionUser) return;
     if (!state) {
       const { error } = await sb.from("job_status").delete().eq("url", key);
       if (error) {
@@ -399,9 +438,7 @@
       }
 
       const toSave =
-        scanRegion === "all"
-          ? jobs
-          : jobs.filter((j) => j.region === scanRegion);
+        scanRegion === "all" ? jobs : jobs.filter((j) => j.region === scanRegion);
       await fetch("/api/jobs/save", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -421,6 +458,10 @@
   }
 
   async function loadJobs() {
+    if (jobsLoaded) {
+      render();
+      return;
+    }
     try {
       const res = await fetch("/api/jobs");
       if (res.ok) {
@@ -428,11 +469,9 @@
         if (Array.isArray(data.jobs)) {
           localApi = true;
           jobs = data.jobs;
+          jobsLoaded = true;
           scanBtn.classList.remove("hidden");
-          if (jobs.length) {
-            showErrors(data.errors || []);
-            setStatus(`${jobs.length} from last scan`);
-          }
+          if (jobs.length) showErrors(data.errors || []);
           render();
           return;
         }
@@ -446,10 +485,12 @@
       const res = await fetch("jobs.json");
       const data = await res.json();
       jobs = data.jobs || [];
+      jobsLoaded = true;
       showErrors(data.errors || []);
       render();
     } catch (_) {
       jobs = [];
+      jobsLoaded = true;
       render();
     }
   }
@@ -457,8 +498,14 @@
   async function onAuth(session) {
     sessionUser = session && session.user ? session.user : null;
     renderAuth();
+    if (!sessionUser) {
+      jobs = [];
+      jobsLoaded = false;
+      marks = {};
+      return;
+    }
     await loadMarks();
-    render();
+    await loadJobs();
   }
 
   results.addEventListener("click", (e) => {
@@ -469,21 +516,32 @@
 
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    if (!sb) return;
-    loginHint.textContent = "Sending login email…";
-    loginHint.classList.remove("hidden");
-    const redirectTo = new URL(".", window.location.href).href;
-    const { error } = await sb.auth.signInWithOtp({
-      email: loginEmail.value.trim(),
-      options: { emailRedirectTo: redirectTo },
-    });
-    loginHint.textContent = error
-      ? error.message
-      : "Check your email and open the link on this same device.";
+    showLoginError("");
+    if (!sb) {
+      showLoginError("Sign-in is not configured.");
+      return;
+    }
+    const email = loginEmail.value.trim();
+    const password = loginPassword.value;
+    if (!email || password.length < minLen) {
+      showLoginError(`Enter your email and a password of at least ${minLen} characters.`);
+      return;
+    }
+    loginSubmit.disabled = true;
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    loginSubmit.disabled = false;
+    if (error) showLoginError(authMessage(error));
   });
 
   signOutBtn.addEventListener("click", async () => {
     if (sb) await sb.auth.signOut();
+  });
+
+  filterToggle.addEventListener("click", openFilters);
+  filterDone.addEventListener("click", closeFilters);
+  filterBackdrop.addEventListener("click", closeFilters);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeFilters();
   });
 
   dateRangeEl.addEventListener("change", () => {
@@ -502,15 +560,15 @@
   scanBtn.addEventListener("click", scan);
 
   (async () => {
-    if (sb) {
-      const { data } = await sb.auth.getSession();
-      await onAuth(data.session);
-      sb.auth.onAuthStateChange((_event, session) => {
-        onAuth(session);
-      });
-    } else {
-      renderAuth();
+    if (!sb) {
+      showLoginError("Sign-in is not configured.");
+      showGate(true);
+      return;
     }
-    await loadJobs();
+    const { data } = await sb.auth.getSession();
+    await onAuth(data.session);
+    sb.auth.onAuthStateChange((_event, session) => {
+      onAuth(session);
+    });
   })();
 })();
