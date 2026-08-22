@@ -11,8 +11,8 @@ Help **Saffin Xavier** (Kochi, India; Indian national; **3.5+ years**; **B.Tech 
 Local Flask app + scrapers that aggregate jobs onto **one dark job-board page**.
 
 ### Regions / sources
-- **India:** JPMorgan, Citi (`jobs.citi.com`), PwC (Workday), Deloitte (**South Asia** careers / RSS — not US `apply.deloitte.com`), GS/MS/EY/KPMG best-effort HTML
-- **Europe:** Relocate.me, Jaabz, Welcome NL, Arbeitnow, Remotive (sponsorship board or keyword)
+- **India:** JPMorgan, Citi (`jobs.citi.com`), PwC (Workday), Deloitte (**South Asia** careers / RSS — not US `apply.deloitte.com`); GS/MS/EY/KPMG off until APIs exist
+- **Europe:** Relocate.me, Jaabz, Arbeitnow, Remotive (sponsorship board or keyword). Welcome NL is **disabled** (old URL is a law firm; official board currently empty)
 - **Infopark:** `infopark.in/companies-job` (all pages); skips Java/seniority gates so local board is browsable
 
 ### Filters (profile fit)
@@ -20,16 +20,18 @@ Local Flask app + scrapers that aggregate jobs onto **one dark job-board page**.
 - Drop intern/campus/etc.
 - Drop if stated min experience **> 4** years
 - Drop Masters/MBA/M.Tech **requirements**
-- India/EU seniority excludes: AVP, VP, principal, staff, architect, director (Lead titles allowed)
+- India/EU seniority excludes: AVP, VP, principal, staff, architect, director (Lead titles allowed; **word-boundary** match so “architecture” is not dropped)
 - Infopark: no Java/Spring or seniority gate
+- **GS / Morgan Stanley / EY / KPMG** HTML sources are **disabled** until a real API exists (still in config)
 
 ### UX
 - Dark-only job cards; Scan streams **one source at a time** for the **selected region** (not all sources if region filtered)
-- Default **Posted = last 24 hours**
-- Filters: region (with counts), company (with counts), date range
-- Apply link per job
+- Default **Posted = last 24 hours** (region/date/status/search remembered in the browser)
+- Filters: region (with counts), company (with counts), date range, **title/company search** (in the filter row/sheet), **New since last visit** (URLs seen this browser)
+- Apply / **Flag** (look later) / Hide per job; phone top bar uses icon buttons
+- **Info** (i) lists sources that are on vs off (Welcome NL, GS, …) and last scan issues
 - Job cache is **per region** (`data/jobs-india.json`, `jobs-eu.json`, `jobs-infopark.json`). Scan one region without wiping the others. **All** shows the merged list.
-- Hosted board: GitHub Pages + Action scan (no Scan in the browser). Gated email+password login (Supabase). Applied/Hidden per user. Passwords created/reset in the Dashboard only.
+- Hosted board: GitHub Pages + Action scan (no Scan in the browser). Gated email+password login (Supabase). Applied / Flagged / Hidden per user. Passwords created/reset in the Dashboard only.
 
 ## How to run
 ```bash

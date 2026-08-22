@@ -117,7 +117,10 @@ def is_excluded_seniority(job: Job, patterns: Iterable[str]) -> bool:
     title = job.title.lower()
     for term in patterns:
         t = term.lower().strip()
-        if t and t in title:
+        if not t:
+            continue
+        # Word-ish bounds so "architect" does not match "architecture".
+        if re.search(rf"(?<![\w]){re.escape(t)}(?![\w])", title):
             return True
     return False
 

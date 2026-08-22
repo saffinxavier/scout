@@ -4,7 +4,7 @@ from pathlib import Path
 
 from flask import Flask, jsonify, request, send_from_directory
 
-from .scan import list_sources, load_merged_jobs, run_scan, save_jobs_snapshot, scan_one
+from .scan import list_sources, load_merged_jobs, run_scan, save_jobs_snapshot, scan_one, source_catalog
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT / "web"
@@ -30,6 +30,8 @@ def config_js():
 @app.get("/api/sources")
 def api_sources():
     region = (request.args.get("region") or "all").strip().lower()
+    if (request.args.get("catalog") or "").strip() in {"1", "true", "yes"}:
+        return jsonify({"sources": source_catalog()})
     return jsonify({"sources": list_sources(region=region)})
 
 

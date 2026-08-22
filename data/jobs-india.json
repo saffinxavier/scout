@@ -1,5 +1,5 @@
 {
-  "count": 149,
+  "count": 150,
   "jobs": [
     {
       "company": "Deloitte",
@@ -1025,6 +1025,17 @@
       "url": "https://southasiacareers.deloitte.com/job/Bengaluru-Lead-Senior-Associate-Fullstack-Java-Bengaluru-Engineering-as-a-Service-Operate/58075244/"
     },
     {
+      "company": "Citi",
+      "description": "Lead Java Architecture Analyst",
+      "location": "Pune, Maharashtra, India",
+      "posted_at": null,
+      "region": "india",
+      "source": "citi",
+      "sponsorship": false,
+      "title": "Lead Java Architecture Analyst",
+      "url": "https://jobs.citi.com/job/pune/lead-java-architecture-analyst/287/93716472752"
+    },
+    {
       "company": "Deloitte",
       "description": "Lead Associate | Fullstack Java | Bengaluru | Engineering as a Service/ Operate",
       "location": "Bengaluru",
@@ -1642,5 +1653,6 @@
     }
   ],
   "errors": [],
-  "region": "india"
+  "region": "india",
+  "generated_at": "2026-08-22T09:59:33+00:00"
 }

@@ -15,14 +15,21 @@ Last updated: 2026-08-22
 - [x] Citi: Phenom `jobs.citi.com` (Workday CXS was 303 → maintenance HTML / empty JSON)
 - [x] Per-region job files; All = merged list (India scan no longer wipes EU/Infopark)
 - [x] EU boards (Jaabz / Relocate / Welcome NL): no fake java/visa text in description; Java/Spring must be in the real title
-- [x] GitHub Pages + Action publish; Applied/Hidden in Supabase
+- [x] GitHub Pages + Action publish; Applied / Flagged / Hidden in Supabase
 - [x] Gated email+password login (no magic link / no in-app reset); Dashboard-only users
 - [x] Auth screen + mobile filter sheet + board UI polish
+- [x] Trust the list: Reload vs Scan, published time, empty-filter hints, 0-job source warnings, mark confirmation, re-login on expired session
+- [x] Title/company search; New-since-last-visit (localStorage URLs); persist region/date/status/search
+- [x] Seniority match uses word boundaries (`architect` ≠ architecture)
+- [x] GS / Morgan Stanley / EY / KPMG set `enabled: false` (dead HTML boards)
+- [x] Search lives in the filters panel; Flag mark; phone icon buttons (sign out / scan / filters)
+- [x] Sources info dialog (on vs off); scan progress is not dumped in the status line
 
 ## Known limitations
 - PwC still uses Workday CXS; when Workday is in maintenance the source fails with a clear error (no public Phenom board)
 - Citi list pages have no posted date — jobs show as date-unknown (toggle “include unknown”)
-- GS / Morgan Stanley / EY / KPMG HTML scrapers remain fragile (JS career sites)
+- GS / Morgan Stanley / EY / KPMG HTML scrapers are **disabled** (`enabled: false`); re-enable when a public API exists
+- Welcome NL (`welcome_nl`) is **disabled**: `welcometothenetherlands.com/vacatures/` redirects to Everaert internships; `welcome-to-nl.nl/jobs` currently shows 0 jobs
 - Arbeitnow may rate-limit (429) after several pages — adapter keeps partial results
 - Relocate.me search `?page=` is a no-op; intl board pages are used instead
 - Year/degree filters are best-effort when adapters only have titles (no full JD)
@@ -30,8 +37,9 @@ Last updated: 2026-08-22
 
 ## Next ideas (not started)
 - [ ] Fetch Infopark/Workday job detail for better year/degree detection
-- [ ] EY/KPMG/GS dedicated APIs if public endpoints found
-- [ ] Warn when HTML adapters return 0 jobs with no error
+- [ ] Source health line (jobs per source)
+- [ ] EY/KPMG/GS dedicated APIs if public endpoints found; then re-enable in config
+- [ ] Filter sheet focus trap
 
 ## Key paths
 - Config: `config.yaml`

@@ -15,6 +15,7 @@
   const dateFrom = document.getElementById("dateFrom");
   const dateTo = document.getElementById("dateTo");
   const includeUnknown = document.getElementById("includeUnknownDate");
+  const qEl = document.getElementById("q");
   const loginForm = document.getElementById("loginForm");
   const loginEmail = document.getElementById("loginEmail");
   const loginPassword = document.getElementById("loginPassword");
@@ -26,6 +27,12 @@
   const filterDone = document.getElementById("filterDone");
   const filterClose = document.getElementById("filterClose");
   const filterBackdrop = document.getElementById("filterBackdrop");
+  const sourceInfoBtn = document.getElementById("sourceInfoBtn");
+  const sourceInfoDot = document.getElementById("sourceInfoDot");
+  const sourceDialog = document.getElementById("sourceDialog");
+  const sourceDialogClose = document.getElementById("sourceDialogClose");
+  const sourceDialogScan = document.getElementById("sourceDialogScan");
+  const sourceDialogBody = document.getElementById("sourceDialogBody");
 
   const REGION_LABELS = {
     all: "All",
@@ -36,17 +43,76 @@
 
   const cfg = window.SCOUT || {};
   const minLen = Number(cfg.passwordMinLength) || 8;
+  const PREFS_KEY = "scout.filterPrefs";
+  const SEEN_KEY = "scout.seenUrls";
 
   let jobs = [];
   let marks = {};
   let localApi = false;
   let sessionUser = null;
   let jobsLoaded = false;
+  let generatedAt = null;
   let sb = null;
+  let sourceCatalog = [];
+  let lastErrors = [];
+  let scanTick = "";
 
   if (window.supabase && cfg.supabaseUrl && cfg.supabaseAnonKey) {
     sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
   }
+
+  let seenSnapshot = new Set();
+  try {
+    const raw = JSON.parse(localStorage.getItem(SEEN_KEY) || "[]");
+    if (Array.isArray(raw)) seenSnapshot = new Set(raw.map(String));
+  } catch (_) {
+    seenSnapshot = new Set();
+  }
+
+  function savePrefs() {
+    try {
+      localStorage.setItem(
+        PREFS_KEY,
+        JSON.stringify({
+          region: regionEl.value,
+          dateRange: dateRangeEl.value,
+          markFilter: markFilterEl.value,
+          includeUnknown: includeUnknown.checked,
+          q: qEl.value,
+        })
+      );
+    } catch (_) {}
+  }
+
+  function loadPrefs() {
+    try {
+      const p = JSON.parse(localStorage.getItem(PREFS_KEY) || "null");
+      if (!p || typeof p !== "object") return;
+      const regions = ["all", "india", "eu", "infopark"];
+      const dates = ["all", "24h", "48h", "7d", "custom"];
+      const marks = ["open", "new", "applied", "flagged", "hidden", "all"];
+      if (regions.includes(p.region)) regionEl.value = p.region;
+      if (dates.includes(p.dateRange)) dateRangeEl.value = p.dateRange;
+      if (marks.includes(p.markFilter)) markFilterEl.value = p.markFilter;
+      if (typeof p.includeUnknown === "boolean") includeUnknown.checked = p.includeUnknown;
+      if (typeof p.q === "string") qEl.value = p.q;
+      customWrap.classList.toggle("hidden", dateRangeEl.value !== "custom");
+    } catch (_) {}
+  }
+
+  function rememberUrls() {
+    try {
+      const next = new Set(seenSnapshot);
+      jobs.forEach((j) => next.add(urlKey(j.url)));
+      localStorage.setItem(SEEN_KEY, JSON.stringify([...next]));
+    } catch (_) {}
+  }
+
+  function isNewJob(j) {
+    return !seenSnapshot.has(urlKey(j.url));
+  }
+
+  loadPrefs();
 
   function urlKey(url) {
     return String(url || "").split("?")[0].toLowerCase();
@@ -60,23 +126,152 @@
     status.textContent = msg || "";
   }
 
+  function scanButtonLabel() {
+    return localApi ? "Scan now" : "Reload list";
+  }
+
+  function setScanLabel(text) {
+    scanLabel.textContent = text;
+    scanBtn.setAttribute("aria-label", text);
+  }
+
   function setScanning(on) {
     scanBtn.disabled = on;
     scanBtn.classList.toggle("loading", on);
-    scanLabel.textContent = on ? "Scanning…" : "Scan now";
+    setScanLabel(
+      on
+        ? localApi
+          ? "Scanning…"
+          : "Reloading…"
+        : scanButtonLabel()
+    );
+  }
+
+  function formatPublished(iso) {
+    if (!iso) return "";
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return String(iso);
+    return d.toLocaleString();
+  }
+
+  function publishedNote() {
+    const t = formatPublished(generatedAt);
+    return t ? ` · updated ${t}` : "";
+  }
+
+  function isAuthLost(error) {
+    if (!error) return false;
+    const code = String(error.code || error.status || "");
+    const msg = String(error.message || "").toLowerCase();
+    return (
+      code === "401" ||
+      error.status === 401 ||
+      code === "PGRST301" ||
+      msg.includes("jwt") ||
+      msg.includes("not authenticated") ||
+      msg.includes("refresh token")
+    );
+  }
+
+  async function forceReLogin(message) {
+    showLoginError(message || "Sign in again.");
+    if (sb) await sb.auth.signOut();
   }
 
   function showErrors(errs) {
-    if (!errs || !errs.length) {
+    const list = Array.isArray(errs) ? errs : [];
+    lastErrors = list.filter((e) => e && e.source && e.source !== "supabase" && e.source !== "ui");
+    const other = list.filter((e) => e && (e.source === "supabase" || e.source === "ui"));
+    if (!other.length) {
       errorsEl.classList.add("hidden");
       errorsEl.innerHTML = "";
-      return;
+    } else {
+      errorsEl.classList.remove("hidden");
+      errorsEl.innerHTML = other.map((e) => escapeHtml(e.message || "")).join(" · ");
     }
-    errorsEl.classList.remove("hidden");
-    const items = errs
-      .map((e) => `<li><strong>${escapeHtml(e.source)}</strong>: ${escapeHtml(e.message)}</li>`)
-      .join("");
-    errorsEl.innerHTML = `<div>${errs.length} source(s) failed</div><ul>${items}</ul>`;
+    sourceInfoDot.classList.toggle("hidden", !lastErrors.length);
+    if (sourceDialog.open) fillSourceDialog();
+  }
+
+  function applyCatalog(data) {
+    if (data && Array.isArray(data.sources) && data.sources.length) {
+      sourceCatalog = data.sources;
+    }
+  }
+
+  async function ensureCatalog() {
+    if (sourceCatalog.length) return;
+    try {
+      const res = await fetch("/api/sources?catalog=1");
+      if (res.ok) {
+        applyCatalog(await res.json());
+      }
+    } catch (_) {}
+  }
+
+  function fillSourceDialog() {
+    if (!sourceCatalog.length) {
+      const ids = [...new Set(jobs.map((j) => j.source).filter(Boolean))];
+      sourceCatalog = ids.map((id) => ({
+        id,
+        label: id,
+        region: "",
+        enabled: true,
+        note: "",
+      }));
+    }
+    const err = {};
+    for (const e of lastErrors) err[e.source] = e.message;
+    const counts = countBy(jobs, (j) => j.source);
+    const on = sourceCatalog.filter((s) => s.enabled);
+    const off = sourceCatalog.filter((s) => !s.enabled);
+    const rowHtml = (rows, empty) => {
+      if (!rows.length) return `<p class="source-empty">${empty}</p>`;
+      return `<ul class="source-list">${rows
+        .map((s) => {
+          const n = counts.get(s.id) || 0;
+          const fail = err[s.id];
+          const note = fail || s.note || "";
+          const active = scanTick && scanTick.startsWith(s.id + " ");
+          return `<li class="${active ? "is-scanning" : ""}${fail ? " is-fail" : ""}">
+            <span class="source-name">${escapeHtml(s.label || s.id)}</span>
+            <span class="source-meta">${escapeHtml(REGION_LABELS[s.region] || s.region || "")} · ${
+              s.enabled ? `${n} in list` : "not scanned"
+            }</span>
+            ${note ? `<span class="source-note">${escapeHtml(note)}</span>` : ""}
+          </li>`;
+        })
+        .join("")}</ul>`;
+    };
+    sourceDialogBody.innerHTML = `<h3>On</h3>${rowHtml(on, "None enabled.")}<h3>Off</h3>${rowHtml(
+      off,
+      "None disabled."
+    )}${
+      localApi
+        ? ""
+        : `<p class="source-foot">Reload only refreshes this page. A full scan runs on GitHub when you push to main.</p>`
+    }`;
+    if (scanTick) {
+      sourceDialogScan.classList.remove("hidden");
+      sourceDialogScan.textContent = `Scanning ${scanTick}`;
+    } else {
+      sourceDialogScan.classList.add("hidden");
+      sourceDialogScan.textContent = "";
+    }
+  }
+
+  async function openSourceDialog() {
+    await ensureCatalog();
+    fillSourceDialog();
+    if (typeof sourceDialog.showModal === "function") sourceDialog.showModal();
+    else sourceDialog.setAttribute("open", "");
+    sourceInfoBtn.setAttribute("aria-expanded", "true");
+  }
+
+  function closeSourceDialog() {
+    if (sourceDialog.open) sourceDialog.close();
+    sourceDialog.removeAttribute("open");
+    sourceInfoBtn.setAttribute("aria-expanded", "false");
   }
 
   function escapeHtml(s) {
@@ -229,14 +424,21 @@
     const region = regionEl.value;
     const company = companyEl.value;
     const mark = markFilterEl.value;
+    const q = (qEl.value || "").trim().toLowerCase();
     return jobs
       .filter((j) => {
         if (region !== "all" && j.region !== region) return false;
         if (company !== "all" && j.company !== company) return false;
         if (!inDateRange(j)) return false;
+        if (q) {
+          const hay = `${j.title || ""} ${j.company || ""}`.toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
         const st = jobMark(j);
         if (mark === "open") return !st;
+        if (mark === "new") return isNewJob(j);
         if (mark === "applied") return st === "applied";
+        if (mark === "flagged") return st === "flagged";
         if (mark === "hidden") return st === "hidden";
         return true;
       })
@@ -288,16 +490,27 @@
     if (!jobs.length) {
       emptyState.classList.remove("hidden");
       emptyState.innerHTML = localApi
-        ? `<p>Click <strong>Scan now</strong> to fetch listings that fit your profile.</p>`
-        : `<p>No listings yet. On GitHub: <strong>Actions</strong> → <strong>Scan and publish</strong> → Run workflow.</p>`;
-      setStatus("");
+        ? `<p>No listings yet. Click <strong>Scan now</strong> to fetch jobs.</p>`
+        : `<p>No listings in the last publish${publishedNote() ? ` (${formatPublished(generatedAt)})` : ""}. Push to <strong>main</strong> or run <strong>Scan and publish</strong> in GitHub Actions.</p>`;
+      setStatus(generatedAt ? `0 jobs${publishedNote()}` : "");
       return;
     }
 
     if (!rows.length) {
       emptyState.classList.remove("hidden");
-      emptyState.innerHTML = `<p>No jobs match the current filters.</p>`;
-      setStatus(`${jobs.length} loaded · 0 shown`);
+      const dateHint = dateRangeEl.value !== "all";
+      emptyState.innerHTML = `
+        <p>No jobs match the current filters (${jobs.length} in the last scan).</p>
+        ${
+          dateHint
+            ? `<p>The default date range is last 24 hours; many postings have no date.</p>
+               <p class="empty-actions">
+                 <button type="button" class="btn btn-outline" data-empty="any-time">Any time</button>
+                 <button type="button" class="btn btn-outline" data-empty="unknown">Include unknown dates</button>
+               </p>`
+            : `<p>Try Status = All, clear search, or another region / company.</p>`
+        }`;
+      setStatus(`${jobs.length} loaded · 0 shown${publishedNote()}`);
       return;
     }
 
@@ -311,12 +524,15 @@
       const sponsor = j.sponsorship
         ? `<span class="pill sponsor">Sponsorship</span>`
         : "";
+      const newPill = isNewJob(j) ? `<span class="pill is-new">New</span>` : "";
       const markPill =
         st === "applied"
           ? `<span class="pill applied">Applied</span>`
-          : st === "hidden"
-            ? `<span class="pill hidden-mark">Hidden</span>`
-            : "";
+          : st === "flagged"
+            ? `<span class="pill flagged">Flagged</span>`
+            : st === "hidden"
+              ? `<span class="pill hidden-mark">Hidden</span>`
+              : "";
       article.innerHTML = `
         <div>
           <h2 class="job-title">${escapeHtml(j.title)}</h2>
@@ -329,6 +545,7 @@
             <span class="pill ${regionClass(j.region)}">${escapeHtml(j.region)}</span>
             <span class="pill source">${escapeHtml(j.source)}</span>
             ${sponsor}
+            ${newPill}
             ${markPill}
           </div>
         </div>
@@ -336,6 +553,7 @@
           <a class="apply" href="${escapeHtml(j.url)}" target="_blank" rel="noopener noreferrer">Apply</a>
           <div class="action-row">
             <button type="button" class="btn btn-ghost btn-sm" data-mark="applied" data-url="${escapeHtml(key)}">Applied</button>
+            <button type="button" class="btn btn-ghost btn-sm" data-mark="flagged" data-url="${escapeHtml(key)}">Flag</button>
             <button type="button" class="btn btn-ghost btn-sm" data-mark="hidden" data-url="${escapeHtml(key)}">Hide</button>
             ${st ? `<button type="button" class="btn btn-ghost btn-sm" data-mark="" data-url="${escapeHtml(key)}">Clear</button>` : ""}
           </div>
@@ -343,7 +561,7 @@
       frag.appendChild(article);
     });
     results.appendChild(frag);
-    setStatus(`${jobs.length} loaded · ${rows.length} shown`);
+    setStatus(`${jobs.length} loaded · ${rows.length} shown${publishedNote()}`);
   }
 
   async function loadMarks() {
@@ -351,6 +569,10 @@
     if (!sb || !sessionUser) return;
     const { data, error } = await sb.from("job_status").select("url,state");
     if (error) {
+      if (isAuthLost(error)) {
+        await forceReLogin("Sign in again.");
+        return;
+      }
       showErrors([{ source: "supabase", message: error.message }]);
       return;
     }
@@ -364,10 +586,16 @@
     if (!state) {
       const { error } = await sb.from("job_status").delete().eq("url", key);
       if (error) {
+        if (isAuthLost(error)) {
+          await forceReLogin("Sign in again.");
+          return;
+        }
         showErrors([{ source: "supabase", message: error.message }]);
         return;
       }
       delete marks[key];
+      render();
+      setStatus(`Cleared mark${publishedNote()}`);
     } else {
       const { error } = await sb.from("job_status").upsert(
         {
@@ -379,12 +607,23 @@
         { onConflict: "user_id,url" }
       );
       if (error) {
+        if (isAuthLost(error)) {
+          await forceReLogin("Sign in again.");
+          return;
+        }
         showErrors([{ source: "supabase", message: error.message }]);
         return;
       }
       marks[key] = state;
+      render();
+      const done =
+        state === "applied"
+          ? "Marked applied"
+          : state === "flagged"
+            ? "Flagged for later"
+            : "Hidden";
+      setStatus(done + publishedNote());
     }
-    render();
   }
 
   async function scan() {
@@ -393,15 +632,13 @@
       try {
         jobsLoaded = false;
         await loadJobs();
-        setStatus(
-          `${jobs.length} from last GitHub publish · a full scan runs when you push to main (or Actions → Run workflow)`
-        );
       } finally {
         setScanning(false);
       }
       return;
     }
     setScanning(true);
+    scanTick = "";
     const scanRegion = regionEl.value || "all";
     if (scanRegion === "all") {
       jobs = [];
@@ -424,8 +661,9 @@
 
       for (let i = 0; i < sources.length; i++) {
         const src = sources[i];
-        setStatus(`Scanning ${src.id} (${i + 1}/${sources.length})…`);
-        scanLabel.textContent = `${i + 1}/${sources.length}`;
+        scanTick = `${src.id} (${i + 1}/${sources.length})`;
+        setScanLabel(`${i + 1}/${sources.length}`);
+        if (sourceDialog.open) fillSourceDialog();
         try {
           const res = await fetch("/api/scan/one", {
             method: "POST",
@@ -461,11 +699,17 @@
           errors: allErrors,
         }),
       });
-      setStatus(`${jobs.length} scanned · ${filtered().length} shown`);
+      generatedAt = new Date().toISOString();
+      rememberUrls();
+      scanTick = "";
+      if (sourceDialog.open) fillSourceDialog();
+      setStatus(`${jobs.length} scanned · ${filtered().length} shown${publishedNote()}`);
     } catch (err) {
       showErrors([{ source: "ui", message: String(err) }]);
       setStatus("Scan failed");
     } finally {
+      scanTick = "";
+      if (sourceDialog.open) fillSourceDialog();
       setScanning(false);
     }
   }
@@ -482,8 +726,12 @@
         if (Array.isArray(data.jobs)) {
           localApi = true;
           jobs = data.jobs;
+          generatedAt = data.generated_at || generatedAt;
+          applyCatalog(data);
           jobsLoaded = true;
+          setScanLabel(scanButtonLabel());
           if (jobs.length) showErrors(data.errors || []);
+          rememberUrls();
           render();
           return;
         }
@@ -496,12 +744,18 @@
       const res = await fetch("jobs.json");
       const data = await res.json();
       jobs = data.jobs || [];
+      generatedAt = data.generated_at || null;
+      applyCatalog(data);
       jobsLoaded = true;
+      setScanLabel(scanButtonLabel());
       showErrors(data.errors || []);
+      rememberUrls();
       render();
     } catch (_) {
       jobs = [];
+      generatedAt = null;
       jobsLoaded = true;
+      setScanLabel(scanButtonLabel());
       render();
     }
   }
@@ -512,12 +766,24 @@
     if (!sessionUser) {
       jobs = [];
       jobsLoaded = false;
+      generatedAt = null;
       marks = {};
       return;
     }
     await loadMarks();
     await loadJobs();
   }
+
+  emptyState.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-empty]");
+    if (!btn) return;
+    const act = btn.getAttribute("data-empty");
+    if (act === "any-time") dateRangeEl.value = "all";
+    if (act === "unknown") includeUnknown.checked = true;
+    customWrap.classList.toggle("hidden", dateRangeEl.value !== "custom");
+    savePrefs();
+    render();
+  });
 
   results.addEventListener("click", (e) => {
     const btn = e.target.closest("button[data-mark]");
@@ -552,21 +818,43 @@
   filterDone.addEventListener("click", closeFilters);
   if (filterClose) filterClose.addEventListener("click", closeFilters);
   filterBackdrop.addEventListener("click", closeFilters);
+  sourceInfoBtn.addEventListener("click", openSourceDialog);
+  sourceDialogClose.addEventListener("click", closeSourceDialog);
+  sourceDialog.addEventListener("close", () => {
+    sourceInfoBtn.setAttribute("aria-expanded", "false");
+  });
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeFilters();
+    if (e.key !== "Escape") return;
+    if (sourceDialog.open) {
+      closeSourceDialog();
+      return;
+    }
+    closeFilters();
   });
 
   dateRangeEl.addEventListener("change", () => {
     customWrap.classList.toggle("hidden", dateRangeEl.value !== "custom");
+    savePrefs();
     render();
   });
   regionEl.addEventListener("change", () => {
     companyEl.value = "all";
+    savePrefs();
     render();
   });
   companyEl.addEventListener("change", render);
-  markFilterEl.addEventListener("change", render);
-  includeUnknown.addEventListener("change", render);
+  markFilterEl.addEventListener("change", () => {
+    savePrefs();
+    render();
+  });
+  includeUnknown.addEventListener("change", () => {
+    savePrefs();
+    render();
+  });
+  qEl.addEventListener("input", () => {
+    savePrefs();
+    render();
+  });
   dateFrom.addEventListener("change", render);
   dateTo.addEventListener("change", render);
   scanBtn.addEventListener("click", scan);

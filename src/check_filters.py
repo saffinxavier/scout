@@ -116,6 +116,12 @@ def main() -> None:
         source="citi",
     )
     assert drop_india_arch is None
+    keep_architecture = _pass(
+        title="Java Engineer - Software Architecture",
+        region="india",
+        source="citi",
+    )
+    assert keep_architecture is not None
 
     # Masters requirement
     drop_masters = _pass(

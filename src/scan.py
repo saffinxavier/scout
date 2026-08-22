@@ -5,6 +5,7 @@ import json
 import pkgutil
 from typing import Any
 
+from datetime import datetime, timezone
 from pathlib import Path
 
 from .config import ROOT, load_config
@@ -13,6 +14,11 @@ from .http_util import make_client
 from .models import Job, SourceError
 
 REGIONS = ("india", "eu", "infopark")
+EMPTY_FETCH_MSG = "0 jobs returned (empty, blocked, or HTML adapter missed the board)"
+
+
+def _now_iso() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
 
 def _data_dir() -> Path:
@@ -47,7 +53,13 @@ def _read_payload(path: Path) -> dict[str, Any]:
         return {"count": 0, "jobs": [], "errors": []}
     jobs = data.get("jobs") or []
     errors = data.get("errors") or []
-    return {"count": len(jobs), "jobs": jobs, "errors": errors}
+    generated_at = data.get("generated_at")
+    if not generated_at:
+        try:
+            generated_at = datetime.fromtimestamp(path.stat().st_mtime, timezone.utc).replace(microsecond=0).isoformat()
+        except OSError:
+            generated_at = None
+    return {"count": len(jobs), "jobs": jobs, "errors": errors, "generated_at": generated_at}
 
 
 def _write_region(region: str, jobs: list[dict[str, Any]], errors: list[dict[str, str]]) -> None:
@@ -56,7 +68,13 @@ def _write_region(region: str, jobs: list[dict[str, Any]], errors: list[dict[str
         key=lambda j: (j.get("posted_at") or "", j.get("title") or ""),
         reverse=True,
     )
-    payload = {"count": len(jobs), "jobs": jobs, "errors": errors, "region": region}
+    payload = {
+        "count": len(jobs),
+        "jobs": jobs,
+        "errors": errors,
+        "region": region,
+        "generated_at": _now_iso(),
+    }
     region_jobs_path(region).write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
 
@@ -99,8 +117,11 @@ def load_merged_jobs() -> dict[str, Any]:
     jobs: list[dict[str, Any]] = []
     errors: list[dict[str, str]] = []
     seen: set[str] = set()
+    stamps: list[str] = []
     for r in REGIONS:
         payload = _read_payload(region_jobs_path(r))
+        if payload.get("generated_at"):
+            stamps.append(payload["generated_at"])
         for j in payload["jobs"]:
             key = _url_key(j)
             if not key or key in seen:
@@ -109,7 +130,13 @@ def load_merged_jobs() -> dict[str, Any]:
             jobs.append(j)
         errors.extend(payload["errors"])
     jobs.sort(key=lambda j: (j.get("posted_at") or "", j.get("title") or ""), reverse=True)
-    return {"count": len(jobs), "jobs": jobs, "errors": errors}
+    return {
+        "count": len(jobs),
+        "jobs": jobs,
+        "errors": errors,
+        "generated_at": max(stamps) if stamps else None,
+        "sources": source_catalog(),
+    }
 
 
 def save_jobs_snapshot(
@@ -155,6 +182,25 @@ def _filter_kwargs(cfg: dict[str, Any], source_cfgs: list[dict[str, Any]]) -> di
     }
 
 
+def source_catalog(cfg: dict[str, Any] | None = None) -> list[dict[str, Any]]:
+    cfg = cfg or load_config()
+    out: list[dict[str, Any]] = []
+    for s in cfg.get("sources") or []:
+        sid = s.get("id")
+        if not sid:
+            continue
+        out.append(
+            {
+                "id": sid,
+                "region": s.get("region") or "",
+                "label": s.get("company") or sid,
+                "enabled": bool(s.get("enabled", True)),
+                "note": s.get("note") or "",
+            }
+        )
+    return out
+
+
 def list_sources(region: str | None = None, cfg: dict[str, Any] | None = None) -> list[dict[str, str]]:
     cfg = cfg or load_config()
     out = []
@@ -198,7 +244,10 @@ def scan_one(source_id: str, cfg: dict[str, Any] | None = None) -> dict[str, Any
     else:
         with make_client(cfg) as client:
             try:
-                for j in fetch(client, sc, cfg):
+                raw_jobs = list(fetch(client, sc, cfg))
+                if not raw_jobs:
+                    errors.append(SourceError(source_id, EMPTY_FETCH_MSG))
+                for j in raw_jobs:
                     kept = passes_filters(j, **fk)
                     if kept:
                         jobs.append(kept)
@@ -245,7 +294,9 @@ def run_scan(
                 )
                 continue
             try:
-                raw_jobs = fetch(client, sc, cfg)
+                raw_jobs = list(fetch(client, sc, cfg))
+                if not raw_jobs:
+                    errors.append(SourceError(sid, EMPTY_FETCH_MSG))
                 for j in raw_jobs:
                     kept = passes_filters(j, **fk)
                     if kept:

@@ -65,10 +65,12 @@ sources:
     max_pages: 10
 
   - id: welcome_nl
-    enabled: true
+    enabled: false
     region: eu
     sponsorship_board: true
-    search_url: "https://www.welcometothenetherlands.com/vacatures/"
+    company: Welcome to NL
+    note: Official board currently lists 0 jobs
+    search_url: "https://www.welcome-to-nl.nl/jobs/"
 
   - id: jaabz
     enabled: true
@@ -105,15 +107,17 @@ sources:
     # jobs.citi.com (Phenom). Workday CXS (citi.wd5) currently 303s to maintenance.
 
   - id: goldman_sachs
-    enabled: true
+    enabled: false
     region: india
     company: Goldman Sachs
+    note: HTML career site, no public API
     search_url: "https://higher.gs.com/roles?keyword=Java&location=India"
 
   - id: morgan_stanley
-    enabled: true
+    enabled: false
     region: india
     company: Morgan Stanley
+    note: HTML career site, no public API
     search_url: "https://www.morganstanley.com/careers/career-opportunities-search?keywords=Java"
 
   - id: deloitte
@@ -152,15 +156,17 @@ sources:
         - remote
 
   - id: ey
-    enabled: true
+    enabled: false
     region: india
     company: EY
+    note: HTML career site, no public API
     search_url: "https://careers.ey.com/ey/search/?q=Java&location=India"
 
   - id: kpmg
-    enabled: true
+    enabled: false
     region: india
     company: KPMG
+    note: HTML career site, no public API
     # Marketing career hub (JS job board has no stable public API yet).
     search_url: "https://kpmg.com/in/en/careers/experienced-professionals.html"
 

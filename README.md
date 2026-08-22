@@ -59,7 +59,9 @@ Edit sources and keywords in [`config.yaml`](config.yaml).
 
 ## Hosted URL (phone + other laptops)
 
-Jobs are a static site on GitHub Pages. Scan runs on GitHub (Actions), not in the phone browser. Applied/Hidden is stored in Supabase after you **sign in with email + password**. There is no Sign up or Forgot-password on the site.
+Jobs are a static site on GitHub Pages. Scan runs on GitHub (Actions), not in the phone browser. Applied / Flagged / Hidden is stored in Supabase after you **sign in with email + password**. There is no Sign up or Forgot-password on the site.
+
+If Flag upserts fail, re-run [`supabase/schema.sql`](supabase/schema.sql) in the SQL Editor (adds `flagged` to the state check).
 
 ### Accounts (Supabase Dashboard only)
 

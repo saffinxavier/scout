@@ -9,11 +9,12 @@ from bs4 import BeautifulSoup
 from ..models import Job
 
 SOURCE_ID = "welcome_nl"
-BASE = "https://www.welcometothenetherlands.com"
+# Config currently has this source disabled. Official board is Nuxt (welcome-to-nl.nl).
+BASE = "https://www.welcome-to-nl.nl"
 
 
 def fetch(client: httpx.Client, source_cfg: dict[str, Any], app_cfg: dict[str, Any]) -> list[Job]:
-    url = source_cfg.get("search_url") or f"{BASE}/vacatures/"
+    url = source_cfg.get("search_url") or f"{BASE}/jobs/"
     r = client.get(url)
     r.raise_for_status()
     soup = BeautifulSoup(r.text, "lxml")
@@ -23,7 +24,7 @@ def fetch(client: httpx.Client, source_cfg: dict[str, Any], app_cfg: dict[str, A
     for a in soup.find_all("a", href=True):
         href = a["href"]
         full = href if href.startswith("http") else urljoin(BASE, href)
-        if "welcometothenetherlands.com" not in full:
+        if "welcome-to-nl.nl" not in full and "welcometothenetherlands.com" not in full:
             continue
         path = full.lower()
         if not any(x in path for x in ("vacature", "job", "career", "stage")):
@@ -60,7 +61,9 @@ def fetch(client: httpx.Client, source_cfg: dict[str, Any], app_cfg: dict[str, A
             for a in soup2.select("article a, h2 a, h3 a"):
                 href = a.get("href") or ""
                 full = href if href.startswith("http") else urljoin(BASE, href)
-                if full in seen or "welcometothenetherlands.com" not in full:
+                if full in seen or (
+                    "welcome-to-nl.nl" not in full and "welcometothenetherlands.com" not in full
+                ):
                     continue
                 title = a.get_text(" ", strip=True)
                 if len(title) < 4:
