@@ -6,6 +6,7 @@
   const results = document.getElementById("results");
   const emptyState = document.getElementById("emptyState");
   const status = document.getElementById("status");
+  const nextScanEl = document.getElementById("nextScan");
   const errorsEl = document.getElementById("errors");
   const regionEl = document.getElementById("region");
   const companyEl = document.getElementById("company");
@@ -151,7 +152,50 @@
     if (!iso) return "";
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) return String(iso);
-    return d.toLocaleString();
+    const dd = String(d.getDate()).padStart(2, "0");
+    const mmm = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][
+      d.getMonth()
+    ];
+    const yyyy = d.getFullYear();
+    const min = String(d.getMinutes()).padStart(2, "0");
+    let h = d.getHours();
+    const ampm = h >= 12 ? "PM" : "AM";
+    h = h % 12 || 12;
+    return `${dd}/${mmm}/${yyyy}, ${h}:${min} ${ampm}`;
+  }
+
+  function nextScheduledScanMs() {
+    const now = Date.now();
+    const utc = new Date(now);
+    const y = utc.getUTCFullYear();
+    const mo = utc.getUTCMonth();
+    const da = utc.getUTCDate();
+    const times = [2, 14].map((hour) => Date.UTC(y, mo, da, hour, 30, 0, 0));
+    times.push(Date.UTC(y, mo, da + 1, 2, 30, 0, 0));
+    return times.filter((t) => t > now).sort((a, b) => a - b)[0];
+  }
+
+  function formatRemain(ms) {
+    if (ms <= 0) return "soon";
+    const s = Math.floor(ms / 1000);
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sec = s % 60;
+    if (h > 0) return `${h}h ${String(m).padStart(2, "0")}m`;
+    if (m > 0) return `${m}m ${String(sec).padStart(2, "0")}s`;
+    return `${sec}s`;
+  }
+
+  function tickNextScan() {
+    if (!nextScanEl) return;
+    if (localApi) {
+      nextScanEl.textContent = "";
+      return;
+    }
+    const next = nextScheduledScanMs();
+    nextScanEl.textContent = next
+      ? ` · next scan ${formatRemain(next - Date.now())}`
+      : "";
   }
 
   function publishedNote() {
@@ -199,8 +243,14 @@
     }
   }
 
+  function isLocalFlask() {
+    const h = location.hostname;
+    return h === "localhost" || h === "127.0.0.1";
+  }
+
   async function ensureCatalog() {
     if (sourceCatalog.length) return;
+    if (!isLocalFlask()) return;
     try {
       const res = await fetch("/api/sources?catalog=1");
       if (res.ok) {
@@ -630,8 +680,10 @@
     if (!localApi) {
       setScanning(true);
       try {
-        jobsLoaded = false;
-        await loadJobs();
+        await loadJobs(true);
+        setStatus(
+          `${jobs.length} loaded · ${filtered().length} shown${publishedNote()} · reloaded this page`
+        );
       } finally {
         setScanning(false);
       }
@@ -714,34 +766,36 @@
     }
   }
 
-  async function loadJobs() {
-    if (jobsLoaded) {
+  async function loadJobs(force) {
+    if (jobsLoaded && !force) {
       render();
       return;
     }
-    try {
-      const res = await fetch("/api/jobs");
-      if (res.ok) {
-        const data = await res.json();
-        if (Array.isArray(data.jobs)) {
-          localApi = true;
-          jobs = data.jobs;
-          generatedAt = data.generated_at || generatedAt;
-          applyCatalog(data);
-          jobsLoaded = true;
-          setScanLabel(scanButtonLabel());
-          if (jobs.length) showErrors(data.errors || []);
-          rememberUrls();
-          render();
-          return;
+    if (isLocalFlask() && !force) {
+      try {
+        const res = await fetch("/api/jobs");
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data.jobs)) {
+            localApi = true;
+            jobs = data.jobs;
+            generatedAt = data.generated_at || generatedAt;
+            applyCatalog(data);
+            jobsLoaded = true;
+            setScanLabel(scanButtonLabel());
+            if (jobs.length) showErrors(data.errors || []);
+            rememberUrls();
+            render();
+            return;
+          }
         }
+      } catch (_) {
+        /* fall through to jobs.json */
       }
-    } catch (_) {
-      /* hosted */
     }
     localApi = false;
     try {
-      const res = await fetch("jobs.json");
+      const res = await fetch(`jobs.json?t=${Date.now()}`, { cache: "no-store" });
       const data = await res.json();
       jobs = data.jobs || [];
       generatedAt = data.generated_at || null;
@@ -858,6 +912,8 @@
   dateFrom.addEventListener("change", render);
   dateTo.addEventListener("change", render);
   scanBtn.addEventListener("click", scan);
+  setInterval(tickNextScan, 1000);
+  tickNextScan();
 
   (async () => {
     if (!sb) {

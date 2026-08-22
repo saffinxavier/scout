@@ -24,7 +24,7 @@ Last updated: 2026-08-22
 - [x] GS / Morgan Stanley / EY / KPMG set `enabled: false` (dead HTML boards)
 - [x] Search lives in the filters panel; Flag mark; phone icon buttons (sign out / scan / filters)
 - [x] Sources info dialog (on vs off); scan progress is not dumped in the status line
-- [x] KPMG Oracle HCM (CX_3001 + CX_3); EY RSS + India gate (SuccessFactors HTML still unused)
+- [x] Hosted Pages does not probe `/api/jobs` (that path is Flask-only; Pages uses `jobs.json`)
 
 ## Known limitations
 - PwC still uses Workday CXS; when Workday is in maintenance the source fails with a clear error (no public Phenom board)

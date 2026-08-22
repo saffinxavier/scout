@@ -280,6 +280,13 @@ h1 {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.next-scan {
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.2;
+  white-space: nowrap;
+}
 .source-info-btn {
   position: relative;
   width: var(--touch);
@@ -560,7 +567,8 @@ a.apply {
   #scanBtn.loading .scan-ico { display: none; }
   .action-row { flex-wrap: wrap; }
   .filter-toggle { display: inline-flex; }
-  .filter-bar .status { font-size: 0.8rem; }
+  .filter-bar .status,
+  .filter-bar .next-scan { font-size: 0.8rem; }
   .user-email { max-width: 7rem; }
   .sub { display: none; }
 
