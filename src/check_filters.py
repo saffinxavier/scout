@@ -5,7 +5,7 @@ from .filters import dedupe_by_url, inferred_min_years, passes_filters
 from .models import Job
 from .sources.citi import _parse_results_html
 
-BOARDS = {"relocate_me", "jaabz"}
+BOARDS = {"relocate_me", "jaabz", "relocate_me_uae", "jaabz_uae"}
 EDU = ["master's", "masters", "m.tech", "mtech", "mba", "m.s", "postgraduate"]
 
 
@@ -56,6 +56,23 @@ def main() -> None:
 
     board = _pass(title="Spring Boot Engineer", source="relocate_me", description="no visa word")
     assert board is not None
+
+    uae_board = _pass(
+        title="Spring Boot Engineer",
+        source="relocate_me_uae",
+        region="uae",
+        location="Dubai",
+        description="no visa word",
+    )
+    assert uae_board is not None and uae_board.sponsorship is True
+    uae_drop = _pass(
+        title="Java Developer",
+        region="uae",
+        source="arbeitnow",
+        location="Dubai",
+        description="local candidates only",
+    )
+    assert uae_drop is None
 
     india = _pass(
         title="Java Engineer",
@@ -188,12 +205,14 @@ def main() -> None:
             {"region": "eu", "url": "b"},
             {"region": "infopark", "url": "c"},
             {"region": "eu", "url": "d"},
+            {"region": "uae", "url": "f"},
             {"region": "other", "url": "e"},
         ]
     )
     assert [j["url"] for j in split["india"]] == ["a"]
     assert [j["url"] for j in split["eu"]] == ["b", "d"]
     assert [j["url"] for j in split["infopark"]] == ["c"]
+    assert [j["url"] for j in split["uae"]] == ["f"]
 
     rows, pages = _parse_results_html(
         '<section id="search-results" data-total-pages="3"></section>'
@@ -229,6 +248,30 @@ def main() -> None:
     assert len(rel_jobs) == 1
     assert rel_jobs[0].company == "Picnic"
     assert "Java" in rel_jobs[0].description
+    uae_jobs: list[Job] = []
+    parse_listing(
+        """
+        <div class="jobs-list__job">
+          <a href="/united-arab-emirates/dubai/talabat/java-engineer-1">
+            <div class="job__title">Java Engineer</div>
+            <p class="job__preview">Spring Boot</p>
+          </a>
+        </div>
+        <div class="jobs-list__job">
+          <a href="/netherlands/amsterdam/picnic/software-engineer-warehouse-systems-10298">
+            <div class="job__title">Software Engineer</div>
+            <p class="job__preview">Java</p>
+          </a>
+        </div>
+        """,
+        uae_jobs,
+        set(),
+        source_id="relocate_me_uae",
+        region="uae",
+        country_slug="united-arab-emirates",
+    )
+    assert len(uae_jobs) == 1
+    assert uae_jobs[0].region == "uae" and uae_jobs[0].source == "relocate_me_uae"
     assert is_java_title("Senior Java Engineer")
     assert not is_java_title("Senior Golang Developer")
     from .sources.remotive import add_jobicy_rows, add_remotive_rows

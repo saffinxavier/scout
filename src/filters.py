@@ -180,7 +180,7 @@ def passes_filters(
     if requires_excluded_education(job, exclude_education or []):
         return None
 
-    if job.region == "eu":
+    if job.region in ("eu", "uae"):
         board_ok = job.source in sponsorship_board_ids
         kw_ok = has_sponsorship_signal(job, sponsorship_keywords)
         if not (board_ok or kw_ok):

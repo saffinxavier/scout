@@ -13,10 +13,23 @@ SOURCE_ID = "jaabz"
 BASE = "https://jaabz.com"
 MAX_PAGES = 10
 
+_LOC_RE = re.compile(
+    r"\b(Netherlands|Germany|Ireland|Spain|Portugal|Sweden|Denmark|"
+    r"Belgium|France|Poland|Austria|Finland|Italy|Remote|"
+    r"United Arab Emirates|UAE|Dubai|Abu Dhabi|Sharjah)\b",
+    re.I,
+)
+_UAE_RE = re.compile(
+    r"\b(united arab emirates|uae|dubai|abu dhabi|sharjah)\b",
+    re.I,
+)
+
 
 def fetch(client: httpx.Client, source_cfg: dict[str, Any], app_cfg: dict[str, Any]) -> list[Job]:
     base_url = source_cfg.get("search_url") or "https://jaabz.com/jobs?q=java+spring&visa=1"
     max_pages = int(source_cfg.get("max_pages") or MAX_PAGES)
+    source_id = str(source_cfg.get("id") or SOURCE_ID)
+    region = str(source_cfg.get("region") or "eu")
     jobs: list[Job] = []
     seen: set[str] = set()
     empty_streak = 0
@@ -58,18 +71,14 @@ def fetch(client: httpx.Client, source_cfg: dict[str, Any], app_cfg: dict[str, A
 
             parent = a.find_parent(["article", "div", "li", "tr"])
             company = "Unknown"
-            location = "Europe"
+            blob = title
             if parent:
-                text = parent.get_text(" ", strip=True)
-                company = _guess_company(text, title) or company
-                loc_m = re.search(
-                    r"\b(Netherlands|Germany|Ireland|Spain|Portugal|Sweden|Denmark|"
-                    r"Belgium|France|Poland|Austria|Finland|Italy|Remote)\b",
-                    text,
-                    re.I,
-                )
-                if loc_m:
-                    location = loc_m.group(1)
+                blob = parent.get_text(" ", strip=True)
+                company = _guess_company(blob, title) or company
+            loc_m = _LOC_RE.search(blob)
+            location = loc_m.group(1) if loc_m else ("UAE" if region == "uae" else "Europe")
+            if region == "uae" and not _UAE_RE.search(f"{blob} {full}"):
+                continue
 
             jobs.append(
                 Job(
@@ -77,8 +86,8 @@ def fetch(client: httpx.Client, source_cfg: dict[str, Any], app_cfg: dict[str, A
                     company=company,
                     location=location,
                     url=full,
-                    source=SOURCE_ID,
-                    region="eu",
+                    source=source_id,
+                    region=region,
                     sponsorship=True,
                     description=title,
                 )
@@ -125,7 +134,12 @@ def _guess_company(blob: str, title: str) -> str | None:
     rest = blob.replace(title, "", 1).strip()
     if not rest:
         return None
-    part = re.split(r"\b(?:Netherlands|Germany|Remote|Visa|Full|Part)\b", rest, maxsplit=1, flags=re.I)[0]
+    part = re.split(
+        r"\b(?:Netherlands|Germany|Remote|Visa|Full|Part|United Arab Emirates|UAE|Dubai)\b",
+        rest,
+        maxsplit=1,
+        flags=re.I,
+    )[0]
     part = part.strip(" -\u2013|,")
     if 2 <= len(part) <= 80:
         return part

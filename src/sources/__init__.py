@@ -26,8 +26,10 @@ FetchFn = Callable[[httpx.Client, dict[str, Any], dict[str, Any]], list[Job]]
 
 REGISTRY: dict[str, FetchFn] = {
     "relocate_me": relocate_me.fetch,
+    "relocate_me_uae": relocate_me.fetch,
     "welcome_nl": welcome_nl.fetch,
     "jaabz": jaabz.fetch,
+    "jaabz_uae": jaabz.fetch,
     "arbeitnow": arbeitnow.fetch,
     "remotive": remotive.fetch,
     "infopark": infopark.fetch,

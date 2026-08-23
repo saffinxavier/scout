@@ -1,0 +1,12 @@
+{
+  "count": 0,
+  "jobs": [],
+  "errors": [
+    {
+      "message": "Client error '404 Not Found' for url 'https://relocate.me/united-arab-emirates'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "source": "relocate_me_uae"
+    }
+  ],
+  "region": "uae",
+  "generated_at": "2026-08-23T19:52:18+00:00"
+}

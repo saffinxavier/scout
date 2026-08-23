@@ -39,6 +39,7 @@
     all: "All",
     india: "BIG4 & Banks",
     eu: "Europe",
+    uae: "UAE",
     infopark: "Infopark",
   };
 
@@ -89,7 +90,7 @@
     try {
       const p = JSON.parse(localStorage.getItem(PREFS_KEY) || "null");
       if (!p || typeof p !== "object") return;
-      const regions = ["all", "india", "eu", "infopark"];
+      const regions = ["all", "india", "eu", "uae", "infopark"];
       const dates = ["all", "24h", "48h", "7d", "custom"];
       const marks = ["open", "new", "applied", "flagged", "hidden", "all"];
       if (regions.includes(p.region)) regionEl.value = p.region;
@@ -422,7 +423,7 @@
     const dated = jobs.filter(inDateRange);
     const byRegion = countBy(dated, (j) => j.region);
     const total = dated.length;
-    const order = ["all", "india", "eu", "infopark"];
+    const order = ["all", "india", "eu", "uae", "infopark"];
     regionEl.innerHTML = order
       .map((id) => {
         const n = id === "all" ? total : byRegion.get(id) || 0;
@@ -504,6 +505,7 @@
 
   function regionClass(region) {
     if (region === "eu") return "region-eu";
+    if (region === "uae") return "region-uae";
     if (region === "infopark") return "region-infopark";
     return "region-india";
   }

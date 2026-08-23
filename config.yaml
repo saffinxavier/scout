@@ -47,7 +47,7 @@ sponsorship_keywords:
   - residence permit
   - sponsor
 
-# Sources marked sponsorship_board: true skip keyword sponsorship checks for EU.
+# Sources marked sponsorship_board: true skip keyword sponsorship checks (EU / UAE).
 sources:
   # --- Infopark Kochi ---
   - id: infopark
@@ -77,6 +77,22 @@ sources:
     region: eu
     sponsorship_board: true
     search_url: "https://jaabz.com/jobs?q=java+spring&visa=1"
+    max_pages: 10
+
+  # --- UAE (same Java / years / education / sponsorship gates as Europe) ---
+  - id: relocate_me_uae
+    enabled: true
+    region: uae
+    sponsorship_board: true
+    country_slug: united-arab-emirates
+    search_url: "https://relocate.me/united-arab-emirates"
+    max_pages: 8
+
+  - id: jaabz_uae
+    enabled: true
+    region: uae
+    sponsorship_board: true
+    search_url: "https://jaabz.com/jobs/in/united-arab-emirates/visasponsorship?q=java+spring"
     max_pages: 10
 
   - id: arbeitnow

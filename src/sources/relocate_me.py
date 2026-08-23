@@ -63,6 +63,9 @@ _EU_COUNTRIES = {
 def fetch(client: httpx.Client, source_cfg: dict[str, Any], app_cfg: dict[str, Any]) -> list[Job]:
     search_url = source_cfg.get("search_url") or SEARCH_URL
     max_pages = int(source_cfg.get("max_pages") or MAX_PAGES)
+    source_id = str(source_cfg.get("id") or SOURCE_ID)
+    region = str(source_cfg.get("region") or "eu")
+    country_slug = (source_cfg.get("country_slug") or "").strip().lower() or None
     jobs: list[Job] = []
     seen: set[str] = set()
     empty_streak = 0
@@ -77,7 +80,14 @@ def fetch(client: httpx.Client, source_cfg: dict[str, Any], app_cfg: dict[str, A
             last_err = e
             break
         before = len(seen)
-        parse_listing(r.text, jobs, seen)
+        parse_listing(
+            r.text,
+            jobs,
+            seen,
+            source_id=source_id,
+            region=region,
+            country_slug=country_slug,
+        )
         if len(seen) == before:
             empty_streak += 1
             if empty_streak >= 2:
@@ -90,7 +100,15 @@ def fetch(client: httpx.Client, source_cfg: dict[str, Any], app_cfg: dict[str, A
     return jobs
 
 
-def parse_listing(html: str, jobs: list[Job], seen: set[str]) -> None:
+def parse_listing(
+    html: str,
+    jobs: list[Job],
+    seen: set[str],
+    *,
+    source_id: str = SOURCE_ID,
+    region: str = "eu",
+    country_slug: str | None = None,
+) -> None:
     soup = BeautifulSoup(html, "lxml")
     cards = soup.select("div.jobs-list__job, div.jobs-list__job")
     if cards:
@@ -102,10 +120,28 @@ def parse_listing(html: str, jobs: list[Job], seen: set[str]) -> None:
             preview_el = card.select_one(".job__preview, .job__preview")
             title = _clean_title(title_el.get_text(" ", strip=True) if title_el else "")
             preview = preview_el.get_text(" ", strip=True) if preview_el else ""
-            _add_job(a["href"], jobs, seen, title=title, extra=preview)
+            _add_job(
+                a["href"],
+                jobs,
+                seen,
+                title=title,
+                extra=preview,
+                source_id=source_id,
+                region=region,
+                country_slug=country_slug,
+            )
         return
     for a in soup.find_all("a", href=True):
-        _add_job(a["href"], jobs, seen, title=a.get_text(" ", strip=True), extra="")
+        _add_job(
+            a["href"],
+            jobs,
+            seen,
+            title=a.get_text(" ", strip=True),
+            extra="",
+            source_id=source_id,
+            region=region,
+            country_slug=country_slug,
+        )
 
 
 def _add_job(
@@ -115,13 +151,19 @@ def _add_job(
     *,
     title: str,
     extra: str,
+    source_id: str = SOURCE_ID,
+    region: str = "eu",
+    country_slug: str | None = None,
 ) -> None:
     path = href.replace(BASE, "") if href.startswith("http") else href
     m = _JOB_PATH.match(path.split("?")[0])
     if not m:
         return
-    country_slug = m.group("country").replace("-", " ").lower()
-    if country_slug not in _EU_COUNTRIES:
+    slug_country = m.group("country").lower()
+    if country_slug:
+        if slug_country != country_slug:
+            return
+    elif slug_country.replace("-", " ") not in _EU_COUNTRIES:
         return
     full = urljoin(BASE, path.split("?")[0])
     if full in seen:
@@ -141,8 +183,8 @@ def _add_job(
             company=company,
             location=f"{city}, {m.group('country').replace('-', ' ').title()}",
             url=full,
-            source=SOURCE_ID,
-            region="eu",
+            source=source_id,
+            region=region,
             sponsorship=True,
             posted_at=None,
             description=blob,

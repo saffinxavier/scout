@@ -5,7 +5,7 @@ Help **Saffin Xavier** (Kochi, India; Indian national; **3.5+ years**; **B.Tech 
 
 ## Target roles
 - Senior / mid backend software engineer (Java, Spring Boot, microservices)
-- Willing to relocate; Europe needs **visa/sponsorship**; India Big 4 + banks OK; Infopark Kochi local board
+- Willing to relocate; Europe and UAE need **visa/sponsorship**; India Big 4 + banks OK; Infopark Kochi local board
 
 ## Product (this repo)
 Local Flask app + scrapers that aggregate jobs onto **one dark job-board page**.
@@ -13,6 +13,7 @@ Local Flask app + scrapers that aggregate jobs onto **one dark job-board page**.
 ### Regions / sources
 - **India:** JPMorgan, Citi (`jobs.citi.com`), PwC (Workday), Deloitte (South Asia RSS), EY (careers.ey.com RSS + India gate), KPMG (Oracle CX_3001 + CX_3). GS/MS still off (no JSON search)
 - **Europe:** Relocate.me (`international-jobs?query=java`), Jaabz, Arbeitnow, Remotive (Remotive.com JSON is a teaser; adapter also reads Jobicy Java remote JSON). Welcome NL is **disabled**
+- **UAE:** Relocate.me country board (`/united-arab-emirates`, UAE paths only) + Jaabz UAE visa-sponsorship search. Same Java/years/education/seniority/sponsorship gates as Europe
 - **Infopark:** `infopark.in/companies-job` (all pages); skips Java/seniority gates so local board is browsable
 
 ### Filters (profile fit)
@@ -20,7 +21,7 @@ Local Flask app + scrapers that aggregate jobs onto **one dark job-board page**.
 - Drop intern/campus/etc.
 - Drop if stated min experience **> 4** years
 - Drop Masters/MBA/M.Tech **requirements**
-- India/EU seniority excludes: AVP, VP, principal, staff, architect, director (Lead titles allowed; **word-boundary** match so “architecture” is not dropped)
+- India/EU/UAE seniority excludes: AVP, VP, principal, staff, architect, director (Lead titles allowed; **word-boundary** match so “architecture” is not dropped)
 - Infopark: no Java/Spring or seniority gate
 - **GS / Morgan Stanley** HTML sources stay **disabled** until a JSON search exists
 
@@ -30,7 +31,7 @@ Local Flask app + scrapers that aggregate jobs onto **one dark job-board page**.
 - Filters: region (with counts; India bucket labeled **BIG4 & Banks**), company (with counts), date range, **title/company search** (in the filter row/sheet), **New since last visit** (URLs seen this browser)
 - Apply / **Flag** (look later) / Hide per job; phone top bar uses icon buttons
 - **Info** (i) lists sources that are on vs off (Welcome NL, GS, …) and last scan issues
-- Job cache is **per region** (`data/jobs-india.json`, `jobs-eu.json`, `jobs-infopark.json`). Scan one region without wiping the others. **All** shows the merged list.
+- Job cache is **per region** (`data/jobs-india.json`, `jobs-eu.json`, `jobs-uae.json`, `jobs-infopark.json`). Scan one region without wiping the others. **All** shows the merged list.
 - Hosted board: GitHub Pages + Action scan (no Scan in the browser). Gated email+password login (Supabase). Applied / Flagged / Hidden per user. Passwords created/reset in the Dashboard only.
 
 ## How to run

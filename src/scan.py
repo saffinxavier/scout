@@ -13,7 +13,7 @@ from .filters import dedupe_by_url, passes_filters
 from .http_util import make_client
 from .models import Job, SourceError
 
-REGIONS = ("india", "eu", "infopark")
+REGIONS = ("india", "eu", "infopark", "uae")
 EMPTY_FETCH_MSG = "0 jobs returned (empty, blocked, or HTML adapter missed the board)"
 
 
@@ -173,9 +173,7 @@ def _filter_kwargs(cfg: dict[str, Any], source_cfgs: list[dict[str, Any]]) -> di
         "keywords": list(cfg.get("keywords") or ["java", "spring boot"]),
         "exclude_levels": list(cfg.get("exclude_levels") or []),
         "sponsorship_keywords": list(cfg.get("sponsorship_keywords") or []),
-        "sponsorship_board_ids": {
-            s["id"] for s in source_cfgs if s.get("sponsorship_board") and s.get("region") == "eu"
-        },
+        "sponsorship_board_ids": {s["id"] for s in source_cfgs if s.get("sponsorship_board")},
         "max_years": int(cfg.get("max_years") or 4),
         "exclude_education": list(cfg.get("exclude_education") or []),
         "exclude_seniority": list(cfg.get("exclude_seniority") or []),
