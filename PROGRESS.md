@@ -36,7 +36,7 @@ Last updated: 2026-08-24
 - Arbeitnow may rate-limit (429) after several pages — adapter keeps partial results
 - Relocate.me `/search?query=` redirects to the unfiltered board; adapter searches `international-jobs?query=java` and uses card previews so Java in the snippet still matches
 - Remotive.com JSON ignores search (always ~20 mixed jobs; HTML/RSS Cloudflare 403). Adapter also reads Jobicy’s Java remote JSON; `empty_ok` so a real empty Java+EU set is not treated as a fetch error
-- Jaabz works locally; GitHub Actions IPs often get a Cloudflare challenge — adapter raises that instead of the generic empty-board message
+- Jaabz works locally; GitHub Actions IPs get Cloudflare 403 — hosted scan now keeps the last committed Jaabz jobs (`carry_over_failed_sources`) and appends “kept N previously saved job(s)” to the error. Scan Europe locally + commit `data/jobs-eu.json` to refresh hosted Jaabz
 - Year/degree filters are best-effort when adapters only have titles (no full JD)
 - Infopark detail pretty-URLs (`/jobs/...`) map to list URLs (`/company-jobs/details/...`)
 

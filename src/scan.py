@@ -264,6 +264,38 @@ def scan_one(source_id: str, cfg: dict[str, Any] | None = None) -> dict[str, Any
     }
 
 
+def carry_over_failed_sources(
+    job_dicts: list[dict[str, Any]],
+    err_dicts: list[dict[str, str]],
+    prior_jobs: list[dict[str, Any]],
+) -> int:
+    """Keep the last saved jobs of sources that failed this scan.
+
+    GitHub Actions IPs get Cloudflare 403 from some boards (Jaabz); without this
+    the hosted publish would wipe jobs a local scan already committed.
+    """
+    failed = {e.get("source") for e in err_dicts if e.get("source")}
+    if not failed:
+        return 0
+    seen = {_url_key(j) for j in job_dicts}
+    kept_by_source: dict[str, int] = {}
+    for j in prior_jobs:
+        src = j.get("source")
+        if src not in failed:
+            continue
+        key = _url_key(j)
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        job_dicts.append(j)
+        kept_by_source[src] = kept_by_source.get(src, 0) + 1
+    for e in err_dicts:
+        n = kept_by_source.get(e.get("source") or "")
+        if n:
+            e["message"] = f"{e['message']} — kept {n} previously saved job(s)"
+    return sum(kept_by_source.values())
+
+
 def run_scan(
     cfg: dict[str, Any] | None = None,
     *,
@@ -310,6 +342,12 @@ def run_scan(
     job_dicts = [j.to_dict() for j in jobs]
     err_dicts = [e.to_dict() for e in errors]
     scanned = (region or "all").strip().lower()
+
+    prior_jobs: list[dict[str, Any]] = []
+    for r in ([scanned] if scanned in REGIONS else REGIONS):
+        prior_jobs.extend(_read_payload(region_jobs_path(r))["jobs"])
+    carry_over_failed_sources(job_dicts, err_dicts, prior_jobs)
+
     if scanned in REGIONS:
         save_jobs_snapshot(job_dicts, err_dicts, region=scanned)
     else:

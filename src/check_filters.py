@@ -168,7 +168,19 @@ def main() -> None:
     )
     assert len(deduped) == 2
 
-    from .scan import split_jobs_by_region
+    from .scan import carry_over_failed_sources, split_jobs_by_region
+
+    cur = [{"source": "arbeitnow", "url": "https://x.com/a", "region": "eu"}]
+    errs = [{"source": "jaabz", "message": "403 Forbidden"}]
+    prior = [
+        {"source": "jaabz", "url": "https://jaabz.com/jobs/1-java", "region": "eu"},
+        {"source": "jaabz", "url": "https://x.com/a", "region": "eu"},  # dup url — skipped
+        {"source": "relocate_me", "url": "https://relocate.me/x/y/z/j-1", "region": "eu"},  # not failed
+    ]
+    kept = carry_over_failed_sources(cur, errs, prior)
+    assert kept == 1 and len(cur) == 2
+    assert "kept 1 previously saved job" in errs[0]["message"]
+    assert carry_over_failed_sources(cur, [], prior) == 0
 
     split = split_jobs_by_region(
         [
