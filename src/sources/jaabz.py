@@ -21,13 +21,23 @@ def fetch(client: httpx.Client, source_cfg: dict[str, Any], app_cfg: dict[str, A
     seen: set[str] = set()
     empty_streak = 0
 
+    first_html = ""
+    last_err: Exception | None = None
+    extra_headers = {
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Referer": f"{BASE}/",
+    }
+
     for page in range(1, max_pages + 1):
         url = _with_page(base_url, page)
         try:
-            r = client.get(url)
+            r = client.get(url, headers=extra_headers)
             r.raise_for_status()
-        except Exception:
+        except Exception as e:
+            last_err = e
             break
+        if page == 1:
+            first_html = r.text
         before = len(seen)
         soup = BeautifulSoup(r.text, "lxml")
         for a in soup.find_all("a", href=True):
@@ -80,7 +90,25 @@ def fetch(client: httpx.Client, source_cfg: dict[str, Any], app_cfg: dict[str, A
         else:
             empty_streak = 0
 
+    if not jobs:
+        if last_err is not None:
+            raise last_err
+        if _cloudflare_block(first_html):
+            raise RuntimeError(
+                "Jaabz returned a Cloudflare challenge with no job links (common on GitHub Actions IPs)"
+            )
     return jobs
+
+
+def _cloudflare_block(html: str) -> bool:
+    if not html:
+        return False
+    if re.search(r"/jobs/\d+-", html):
+        return False
+    low = html.lower()
+    if "just a moment" in low or "cf-challenge" in low or "challenge-platform" in low:
+        return True
+    return "cloudflare" in low and len(html) < 20000
 
 
 def _with_page(url: str, page: int) -> str:

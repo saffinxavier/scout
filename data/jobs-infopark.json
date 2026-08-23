@@ -1,5 +1,5 @@
 {
-  "count": 356,
+  "count": 346,
   "jobs": [
     {
       "company": "UROLIME",
@@ -123,17 +123,6 @@
       "url": "https://infopark.in/company-jobs/details/79/25157"
     },
     {
-      "company": "2Base Technologies Pvt Ltd",
-      "description": "Visual Designer",
-      "location": "Infopark, Kochi",
-      "posted_at": "2026-08-20",
-      "region": "infopark",
-      "source": "infopark",
-      "sponsorship": false,
-      "title": "Visual Designer",
-      "url": "https://infopark.in/company-jobs/details/312/25148"
-    },
-    {
       "company": "Simelabs - An Astek Company",
       "description": "Salesforce Developer",
       "location": "Infopark, Kochi",
@@ -167,17 +156,6 @@
       "url": "https://infopark.in/company-jobs/details/483/25149"
     },
     {
-      "company": "2Base Technologies Pvt Ltd",
-      "description": "Marketing & Growth Lead",
-      "location": "Infopark, Kochi",
-      "posted_at": "2026-08-20",
-      "region": "infopark",
-      "source": "infopark",
-      "sponsorship": false,
-      "title": "Marketing & Growth Lead",
-      "url": "https://infopark.in/company-jobs/details/312/25147"
-    },
-    {
       "company": "Experion Technologies",
       "description": "Lead Developer \u2013 Dynamics 365 CRM",
       "location": "Infopark, Kochi",
@@ -198,39 +176,6 @@
       "sponsorship": false,
       "title": "Lead Data Engineer",
       "url": "https://infopark.in/company-jobs/details/103/25152"
-    },
-    {
-      "company": "2Base Technologies Pvt Ltd",
-      "description": "Business Development Manager",
-      "location": "Infopark, Kochi",
-      "posted_at": "2026-08-20",
-      "region": "infopark",
-      "source": "infopark",
-      "sponsorship": false,
-      "title": "Business Development Manager",
-      "url": "https://infopark.in/company-jobs/details/312/25145"
-    },
-    {
-      "company": "2Base Technologies Pvt Ltd",
-      "description": "Associate - QA Engineer",
-      "location": "Infopark, Kochi",
-      "posted_at": "2026-08-20",
-      "region": "infopark",
-      "source": "infopark",
-      "sponsorship": false,
-      "title": "Associate - QA Engineer",
-      "url": "https://infopark.in/company-jobs/details/312/25146"
-    },
-    {
-      "company": "2Base Technologies Pvt Ltd",
-      "description": "Associate - QA Engineer",
-      "location": "Infopark, Kochi",
-      "posted_at": "2026-08-20",
-      "region": "infopark",
-      "source": "infopark",
-      "sponsorship": false,
-      "title": "Associate - QA Engineer",
-      "url": "https://infopark.in/company-jobs/details/312/25144"
     },
     {
       "company": "Simelabs - An Astek Company",
@@ -1498,17 +1443,6 @@
       "url": "https://infopark.in/company-jobs/details/62/24753"
     },
     {
-      "company": "Webdura Technologies",
-      "description": "Senior Backend Developer",
-      "location": "Infopark, Kochi",
-      "posted_at": "2026-07-21",
-      "region": "infopark",
-      "source": "infopark",
-      "sponsorship": false,
-      "title": "Senior Backend Developer",
-      "url": "https://infopark.in/company-jobs/details/187/24754"
-    },
-    {
       "company": "Cabot Technology Solutions Pvt. Ltd.",
       "description": "Inside Sales Executive",
       "location": "Infopark, Kochi",
@@ -1617,17 +1551,6 @@
       "sponsorship": false,
       "title": "Web & Digital Marketing Specialist (Remote / WFH or Work From Office \u2013 Kochi)",
       "url": "https://infopark.in/company-jobs/details/283/24659"
-    },
-    {
-      "company": "Valoriz Digital Pvt. Ltd.",
-      "description": "Sales Analyst",
-      "location": "Infopark, Kochi",
-      "posted_at": "2026-07-15",
-      "region": "infopark",
-      "source": "infopark",
-      "sponsorship": false,
-      "title": "Sales Analyst",
-      "url": "https://infopark.in/company-jobs/details/410/24653"
     },
     {
       "company": "Dynamed Healthcare Solutions Pvt.Ltd.",
@@ -3280,17 +3203,6 @@
       "url": "https://infopark.in/company-jobs/details/85/20718"
     },
     {
-      "company": "ALTOS Technologies",
-      "description": "SENIOR DIGITAL MARKETING EXECUTIVE",
-      "location": "Infopark, Kochi",
-      "posted_at": "2025-10-01",
-      "region": "infopark",
-      "source": "infopark",
-      "sponsorship": false,
-      "title": "SENIOR DIGITAL MARKETING EXECUTIVE",
-      "url": "https://infopark.in/company-jobs/details/368/20632"
-    },
-    {
       "company": "Nestsoft TechnoMaster PVT LTD",
       "description": "Zoho Books Expert",
       "location": "Infopark, Kochi",
@@ -3388,28 +3300,6 @@
       "sponsorship": false,
       "title": "Senior Data Scientist",
       "url": "https://infopark.in/company-jobs/details/415/20262"
-    },
-    {
-      "company": "ALTOS Technologies",
-      "description": "Jr. Python developer",
-      "location": "Infopark, Kochi",
-      "posted_at": "2025-08-09",
-      "region": "infopark",
-      "source": "infopark",
-      "sponsorship": false,
-      "title": "Jr. Python developer",
-      "url": "https://infopark.in/company-jobs/details/368/19950"
-    },
-    {
-      "company": "ALTOS Technologies",
-      "description": "Jr. Digital marketing executive",
-      "location": "Infopark, Kochi",
-      "posted_at": "2025-08-09",
-      "region": "infopark",
-      "source": "infopark",
-      "sponsorship": false,
-      "title": "Jr. Digital marketing executive",
-      "url": "https://infopark.in/company-jobs/details/368/19951"
     },
     {
       "company": "Global Infonet Inc",
@@ -3920,5 +3810,5 @@
   ],
   "errors": [],
   "region": "infopark",
-  "generated_at": "2026-08-22T14:12:42+00:00"
+  "generated_at": "2026-08-23T18:47:02+00:00"
 }

@@ -15,7 +15,8 @@ def make_client(cfg: dict[str, Any]) -> httpx.Client:
     headers = {
         "User-Agent": http.get(
             "user_agent",
-            "Mozilla/5.0 (compatible; ScoutJobFinder/1.0; +local)",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
         ),
         "Accept": "application/json, text/html, */*",
         "Accept-Language": "en-US,en;q=0.9",

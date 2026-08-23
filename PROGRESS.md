@@ -1,6 +1,6 @@
 # Scout — Progress
 
-Last updated: 2026-08-22
+Last updated: 2026-08-24
 
 ## Done
 - [x] Local Flask app + `config.yaml` sources + dark job-board UI
@@ -25,6 +25,7 @@ Last updated: 2026-08-22
 - [x] Search lives in the filters panel; Flag mark; phone icon buttons (sign out / scan / filters)
 - [x] Sources info dialog (on vs off); scan progress is not dumped in the status line
 - [x] Hosted Pages does not probe `/api/jobs` (that path is Flask-only; Pages uses `jobs.json`)
+- [x] Region dropdown: India bucket labeled **BIG4 & Banks** (value still `india`)
 
 ## Known limitations
 - PwC still uses Workday CXS; when Workday is in maintenance the source fails with a clear error (no public Phenom board)
@@ -33,7 +34,9 @@ Last updated: 2026-08-22
 - KPMG Oracle titles are often generic (`Consultant`); adapter fetches each JD so Java/years filters can run
 - Welcome NL (`welcome_nl`) is **disabled**: `welcometothenetherlands.com/vacatures/` redirects to Everaert internships; `welcome-to-nl.nl/jobs` currently shows 0 jobs
 - Arbeitnow may rate-limit (429) after several pages — adapter keeps partial results
-- Relocate.me search `?page=` is a no-op; intl board pages are used instead
+- Relocate.me `/search?query=` redirects to the unfiltered board; adapter searches `international-jobs?query=java` and uses card previews so Java in the snippet still matches
+- Remotive.com JSON ignores search (always ~20 mixed jobs; HTML/RSS Cloudflare 403). Adapter also reads Jobicy’s Java remote JSON; `empty_ok` so a real empty Java+EU set is not treated as a fetch error
+- Jaabz works locally; GitHub Actions IPs often get a Cloudflare challenge — adapter raises that instead of the generic empty-board message
 - Year/degree filters are best-effort when adapters only have titles (no full JD)
 - Infopark detail pretty-URLs (`/jobs/...`) map to list URLs (`/company-jobs/details/...`)
 

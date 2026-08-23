@@ -61,7 +61,7 @@ sources:
     enabled: true
     region: eu
     sponsorship_board: true
-    search_url: "https://relocate.me/search?query=java%20spring"
+    search_url: "https://relocate.me/international-jobs?query=java"
     max_pages: 10
 
   - id: welcome_nl
@@ -89,8 +89,9 @@ sources:
   - id: remotive
     enabled: true
     region: eu
-    sponsorship_board: false
-    # Remote roles; kept only if EU/worldwide + sponsorship keywords. API returns full search set.
+    sponsorship_board: true
+    empty_ok: true
+    note: "Remotive.com JSON is a 20-job teaser (search ignored; HTML/RSS Cloudflare). Adapter also reads Jobicy Java remote JSON; 0 means no Java+EU/worldwide titles today."
 
   # --- India Big 4 + banks ---
   - id: jpmorgan
@@ -176,6 +177,6 @@ sources:
 
 http:
   timeout_seconds: 30
-  user_agent: "Mozilla/5.0 (compatible; ScoutJobFinder/1.0; +local)"
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
   # Career CDNs sometimes break local trust stores on Windows.
   verify_ssl: false

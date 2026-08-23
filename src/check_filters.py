@@ -191,6 +191,89 @@ def main() -> None:
     )
     assert pages == 3 and rows[0][0] == "Java Dev" and "pune" in rows[0][1]
 
+    from .sources.relocate_me import parse_listing
+    from .sources.remotive import is_java_title
+    from .sources.jaabz import _cloudflare_block
+
+    rel_jobs: list[Job] = []
+    parse_listing(
+        """
+        <div class="jobs-list__job">
+          <a href="/netherlands/amsterdam/picnic/software-engineer-warehouse-systems-10298">
+            <div class="job__title">Software Engineer - Warehouse Systems in Amsterdam</div>
+            <p class="job__preview">Our Java teams in the Warehouse Systems domain</p>
+          </a>
+        </div>
+        <div class="jobs-list__job">
+          <a href="/japan/tokyo/hennge/backend-engineer-1">
+            <div class="job__title">Backend Engineer</div>
+            <p class="job__preview">Java Spring</p>
+          </a>
+        </div>
+        """,
+        rel_jobs,
+        set(),
+    )
+    assert len(rel_jobs) == 1
+    assert rel_jobs[0].company == "Picnic"
+    assert "Java" in rel_jobs[0].description
+    assert is_java_title("Senior Java Engineer")
+    assert not is_java_title("Senior Golang Developer")
+    from .sources.remotive import add_jobicy_rows, add_remotive_rows
+
+    rem: list[Job] = []
+    add_remotive_rows(
+        {
+            "jobs": [
+                {
+                    "title": "Java Backend Engineer",
+                    "company_name": "Acme",
+                    "candidate_required_location": "Europe",
+                    "url": "https://remotive.com/remote-jobs/software-dev/java-1",
+                    "description": "Spring Boot",
+                    "publication_date": "2026-08-01",
+                },
+                {
+                    "title": "Senior Golang Developer",
+                    "company_name": "Lemon",
+                    "candidate_required_location": "Europe",
+                    "url": "https://remotive.com/remote-jobs/software-dev/go-1",
+                    "description": "Java, Python, React",
+                },
+            ]
+        },
+        rem,
+        set(),
+    )
+    assert len(rem) == 1 and rem[0].company == "Acme"
+    icy: list[Job] = []
+    add_jobicy_rows(
+        {
+            "jobs": [
+                {
+                    "jobTitle": "Java Backend Engineer",
+                    "companyName": "BotCo",
+                    "jobGeo": "Europe",
+                    "url": "https://jobicy.com/jobs/java-eu",
+                    "jobDescription": "Spring",
+                    "pubDate": "2026-08-01",
+                },
+                {
+                    "jobTitle": "Java Backend Engineer",
+                    "companyName": "BotCo",
+                    "jobGeo": "APAC",
+                    "url": "https://jobicy.com/jobs/java-apac",
+                    "jobDescription": "Spring",
+                },
+            ]
+        },
+        icy,
+        set(),
+    )
+    assert len(icy) == 1 and "Europe" in icy[0].location
+    assert _cloudflare_block("<html>Just a moment... cloudflare challenge-platform</html>")
+    assert not _cloudflare_block('<a href="/jobs/266191-senior-java-engineer">Java</a>')
+
     print("check_filters: ok")
 
 

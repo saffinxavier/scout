@@ -12,7 +12,7 @@ Local Flask app + scrapers that aggregate jobs onto **one dark job-board page**.
 
 ### Regions / sources
 - **India:** JPMorgan, Citi (`jobs.citi.com`), PwC (Workday), Deloitte (South Asia RSS), EY (careers.ey.com RSS + India gate), KPMG (Oracle CX_3001 + CX_3). GS/MS still off (no JSON search)
-- **Europe:** Relocate.me, Jaabz, Arbeitnow, Remotive (sponsorship board or keyword). Welcome NL is **disabled** (old URL is a law firm; official board currently empty)
+- **Europe:** Relocate.me (`international-jobs?query=java`), Jaabz, Arbeitnow, Remotive (Remotive.com JSON is a teaser; adapter also reads Jobicy Java remote JSON). Welcome NL is **disabled**
 - **Infopark:** `infopark.in/companies-job` (all pages); skips Java/seniority gates so local board is browsable
 
 ### Filters (profile fit)
@@ -27,7 +27,7 @@ Local Flask app + scrapers that aggregate jobs onto **one dark job-board page**.
 ### UX
 - Dark-only job cards; Scan streams **one source at a time** for the **selected region** (not all sources if region filtered)
 - Default **Posted = last 24 hours** (region/date/status/search remembered in the browser)
-- Filters: region (with counts), company (with counts), date range, **title/company search** (in the filter row/sheet), **New since last visit** (URLs seen this browser)
+- Filters: region (with counts; India bucket labeled **BIG4 & Banks**), company (with counts), date range, **title/company search** (in the filter row/sheet), **New since last visit** (URLs seen this browser)
 - Apply / **Flag** (look later) / Hide per job; phone top bar uses icon buttons
 - **Info** (i) lists sources that are on vs off (Welcome NL, GS, …) and last scan issues
 - Job cache is **per region** (`data/jobs-india.json`, `jobs-eu.json`, `jobs-infopark.json`). Scan one region without wiping the others. **All** shows the merged list.

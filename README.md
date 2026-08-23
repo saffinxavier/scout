@@ -54,7 +54,7 @@ Edit sources and keywords in [`config.yaml`](config.yaml).
 - JPM and **KPMG** use Oracle HCM JSON; Citi Phenom; PwC Workday; **EY** and Deloitte use Jobs2Web RSS (India gated). GS/MS stay off.
 - Infopark is a local Kochi board: it skips the Java/Spring and Lead/Architect gates so you can browse what is posted. India & Europe stay Java/Spring-only with seniority filters.
 - Scrapers are for **personal** use; sites change often. Failed sources show in the warning banner without blocking others.
-- Pagination: Infopark, Jaabz, Relocate (intl board), Arbeitnow, JPM, and Workday (Citi/PwC) walk multiple pages. Remotive returns its full search set. HTML career scrapers (GS/MS/Big 4 landing pages) stay single-page / best-effort.
+- Pagination: Infopark, Jaabz, Relocate (intl board), Arbeitnow, JPM, and Workday (Citi/PwC) walk multiple pages. Remotive.com JSON is a 20-job teaser; the adapter also reads Jobicy’s Java remote JSON. HTML career scrapers (GS/MS/Big 4 landing pages) stay single-page / best-effort.
 - SSL verify is off by default in config for flaky career CDNs on Windows — local-only tool.
 
 ## Hosted URL (phone + other laptops)

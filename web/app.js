@@ -37,7 +37,7 @@
 
   const REGION_LABELS = {
     all: "All",
-    india: "India",
+    india: "BIG4 & Banks",
     eu: "Europe",
     infopark: "Infopark",
   };
@@ -592,7 +592,7 @@
             <span class="dot">${escapeHtml(j.posted_at || "Date unknown")}</span>
           </div>
           <div class="job-meta pills-row">
-            <span class="pill ${regionClass(j.region)}">${escapeHtml(j.region)}</span>
+            <span class="pill ${regionClass(j.region)}">${escapeHtml(REGION_LABELS[j.region] || j.region)}</span>
             <span class="pill source">${escapeHtml(j.source)}</span>
             ${sponsor}
             ${newPill}

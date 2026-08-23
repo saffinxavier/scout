@@ -245,7 +245,7 @@ def scan_one(source_id: str, cfg: dict[str, Any] | None = None) -> dict[str, Any
         with make_client(cfg) as client:
             try:
                 raw_jobs = list(fetch(client, sc, cfg))
-                if not raw_jobs:
+                if not raw_jobs and not sc.get("empty_ok"):
                     errors.append(SourceError(source_id, EMPTY_FETCH_MSG))
                 for j in raw_jobs:
                     kept = passes_filters(j, **fk)
@@ -295,7 +295,7 @@ def run_scan(
                 continue
             try:
                 raw_jobs = list(fetch(client, sc, cfg))
-                if not raw_jobs:
+                if not raw_jobs and not sc.get("empty_ok"):
                     errors.append(SourceError(sid, EMPTY_FETCH_MSG))
                 for j in raw_jobs:
                     kept = passes_filters(j, **fk)
