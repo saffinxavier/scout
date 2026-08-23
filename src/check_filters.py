@@ -214,6 +214,60 @@ def main() -> None:
     assert [j["url"] for j in split["infopark"]] == ["c"]
     assert [j["url"] for j in split["uae"]] == ["f"]
 
+    import json
+    import tempfile
+    from pathlib import Path
+    from unittest.mock import patch
+
+    from .scan import save_jobs_snapshot
+
+    with tempfile.TemporaryDirectory() as td:
+        tmp = Path(td)
+        (tmp / "jobs-eu.json").write_text(
+            json.dumps(
+                {
+                    "count": 1,
+                    "jobs": [
+                        {
+                            "source": "jaabz",
+                            "url": "https://jaabz.com/jobs/keep-me",
+                            "region": "eu",
+                            "title": "Java",
+                        }
+                    ],
+                    "errors": [],
+                }
+            ),
+            encoding="utf-8",
+        )
+        with patch("src.scan._data_dir", lambda: tmp):
+            saved = save_jobs_snapshot(
+                [{"source": "arbeitnow", "url": "https://x.com/new", "region": "eu"}],
+                [{"source": "jaabz", "message": "403 Forbidden"}],
+                region="eu",
+            )
+        assert any(j["url"] == "https://jaabz.com/jobs/keep-me" for j in saved)
+        disk = json.loads((tmp / "jobs-eu.json").read_text(encoding="utf-8"))
+        assert any(j["url"] == "https://jaabz.com/jobs/keep-me" for j in disk["jobs"])
+        assert disk["errors"] and disk["errors"][0]["source"] == "jaabz"
+        with patch("src.scan._data_dir", lambda: tmp):
+            save_jobs_snapshot(
+                [{"source": "arbeitnow", "url": "https://x.com/n2", "region": "eu"}],
+                [{"source": "not_a_source", "message": "boom"}],
+                region="eu",
+            )
+        disk2 = json.loads((tmp / "jobs-eu.json").read_text(encoding="utf-8"))
+        assert disk2["errors"] == []
+        before = {p.name: p.read_text(encoding="utf-8") for p in tmp.glob("*.json")}
+        with patch("src.scan._data_dir", lambda: tmp):
+            try:
+                save_jobs_snapshot([], [], region="mars")
+                raise AssertionError("expected ValueError")
+            except ValueError:
+                pass
+        after = {p.name: p.read_text(encoding="utf-8") for p in tmp.glob("*.json")}
+        assert before == after
+
     rows, pages = _parse_results_html(
         '<section id="search-results" data-total-pages="3"></section>'
         '<li class="sr-job-item"><h3><a class="sr-job-item__link" '

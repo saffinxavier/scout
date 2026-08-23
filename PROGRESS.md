@@ -27,6 +27,7 @@ Last updated: 2026-08-24
 - [x] Hosted Pages does not probe `/api/jobs` (that path is Flask-only; Pages uses `jobs.json`)
 - [x] Region dropdown: India bucket labeled **BIG4 & Banks** (value still `india`)
 - [x] UAE region (Jaabz + Relocate UAE-only; same sponsorship/Java/years gates as Europe)
+- [x] Local `/api/jobs/save` carries over last-good jobs for failed sources (same as `run_scan`); unknown region is 400; region error lists are not mixed; Apply links allow http(s) only
 
 ## Known limitations
 - PwC still uses Workday CXS; when Workday is in maintenance the source fails with a clear error (no public Phenom board)
@@ -37,7 +38,7 @@ Last updated: 2026-08-24
 - Arbeitnow may rate-limit (429) after several pages — adapter keeps partial results
 - Relocate.me `/search?query=` redirects to the unfiltered board; EU adapter searches `international-jobs?query=java`. UAE adapter uses `/united-arab-emirates` and keeps only that country slug (does not crawl the global intl board)
 - Remotive.com JSON ignores search (always ~20 mixed jobs; HTML/RSS Cloudflare 403). Adapter also reads Jobicy’s Java remote JSON; `empty_ok` so a real empty Java+EU set is not treated as a fetch error
-- Jaabz works locally; GitHub Actions IPs get Cloudflare 403 — hosted scan now keeps the last committed Jaabz jobs (`carry_over_failed_sources`) and appends “kept N previously saved job(s)” to the error. Scan Europe/UAE locally + commit `data/jobs-eu.json` / `jobs-uae.json` to refresh hosted Jaabz
+- Jaabz works locally; GitHub Actions IPs get Cloudflare 403 — both `run_scan` and local progressive `/api/jobs/save` keep the last saved jobs of failed sources (`carry_over_failed_sources`) and append “kept N previously saved job(s)” to the error. Scan Europe/UAE locally + commit `data/jobs-eu.json` / `jobs-uae.json` to refresh hosted Jaabz
 - UAE Java/Spring list will often be thin: many Dubai ads want 5–8+ years and are dropped by `max_years=4`
 - Year/degree filters are best-effort when adapters only have titles (no full JD)
 - Infopark detail pretty-URLs (`/jobs/...`) map to list URLs (`/company-jobs/details/...`)

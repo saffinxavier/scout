@@ -4,7 +4,7 @@ from pathlib import Path
 
 from flask import Flask, jsonify, request, send_from_directory
 
-from .scan import list_sources, load_merged_jobs, run_scan, save_jobs_snapshot, scan_one, source_catalog
+from .scan import SAVE_REGIONS, list_sources, load_merged_jobs, run_scan, save_jobs_snapshot, scan_one, source_catalog
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT / "web"
@@ -63,11 +63,18 @@ def api_scan():
 @app.post("/api/jobs/save")
 def api_jobs_save():
     body = request.get_json(silent=True) or {}
-    jobs = body.get("jobs") or []
-    errors = body.get("errors") or []
-    region = (body.get("region") or "all").strip().lower()
-    save_jobs_snapshot(jobs, errors, region=region)
-    return jsonify({"ok": True, "count": len(jobs), "region": region})
+    region = (body.get("region") or "").strip().lower()
+    if region not in SAVE_REGIONS:
+        return jsonify({"ok": False, "error": "invalid region"}), 400
+    jobs = body.get("jobs")
+    if not isinstance(jobs, list):
+        return jsonify({"ok": False, "error": "jobs must be a list"}), 400
+    errors = body.get("errors") if isinstance(body.get("errors"), list) else []
+    try:
+        saved = save_jobs_snapshot(jobs, errors, region=region)
+    except ValueError as e:
+        return jsonify({"ok": False, "error": str(e)}), 400
+    return jsonify({"ok": True, "count": len(saved), "region": region, "jobs": saved, "errors": errors})
 
 
 @app.get("/api/jobs")

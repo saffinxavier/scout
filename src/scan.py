@@ -139,21 +139,37 @@ def load_merged_jobs() -> dict[str, Any]:
     }
 
 
+SAVE_REGIONS = REGIONS + ("all",)
+
+
 def save_jobs_snapshot(
     jobs: list[dict[str, Any]],
     errors: list[dict[str, str]],
     region: str = "all",
-) -> None:
+) -> list[dict[str, Any]]:
+    """Write region file(s). Carries over last-good jobs for sources in `errors`.
+
+    Unknown region raises ValueError (caller should 400). Empty error buckets stay
+    empty — do not copy the full error list onto a region file.
+    """
     region = (region or "all").strip().lower()
+    if region not in SAVE_REGIONS:
+        raise ValueError(f"unknown region: {region}")
+
+    prior: list[dict[str, Any]] = []
+    for r in [region] if region in REGIONS else list(REGIONS):
+        prior.extend(_read_payload(region_jobs_path(r))["jobs"])
+    carry_over_failed_sources(jobs, errors, prior)
+
     err_buckets = _split_errors(errors, _source_region_map())
     if region in REGIONS:
         jobs = [j for j in jobs if j.get("region") == region]
-        errs = err_buckets[region] if err_buckets[region] else errors
-        _write_region(region, jobs, errs)
-        return
+        _write_region(region, jobs, err_buckets[region])
+        return jobs
     buckets = split_jobs_by_region(jobs)
     for r in REGIONS:
         _write_region(r, buckets[r], err_buckets[r])
+    return jobs
 
 
 def _registry():
@@ -340,16 +356,7 @@ def run_scan(
     job_dicts = [j.to_dict() for j in jobs]
     err_dicts = [e.to_dict() for e in errors]
     scanned = (region or "all").strip().lower()
-
-    prior_jobs: list[dict[str, Any]] = []
-    for r in ([scanned] if scanned in REGIONS else REGIONS):
-        prior_jobs.extend(_read_payload(region_jobs_path(r))["jobs"])
-    carry_over_failed_sources(job_dicts, err_dicts, prior_jobs)
-
-    if scanned in REGIONS:
-        save_jobs_snapshot(job_dicts, err_dicts, region=scanned)
-    else:
-        save_jobs_snapshot(job_dicts, err_dicts, region="all")
+    save_jobs_snapshot(job_dicts, err_dicts, region=scanned if scanned in SAVE_REGIONS else "all")
 
     return {
         "count": len(job_dicts),

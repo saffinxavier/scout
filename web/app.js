@@ -333,6 +333,16 @@
       .replaceAll('"', "&quot;");
   }
 
+  function safeApplyHref(url) {
+    try {
+      const u = new URL(String(url || ""));
+      if (u.protocol !== "http:" && u.protocol !== "https:") return "";
+      return u.href;
+    } catch (_) {
+      return "";
+    }
+  }
+
   function showLoginError(msg) {
     if (!msg) {
       loginError.hidden = true;
@@ -573,6 +583,7 @@
       const st = jobMark(j);
       article.className = "job-card" + (st ? ` is-${st}` : "");
       const key = urlKey(j.url);
+      const applyHref = safeApplyHref(j.url);
       const sponsor = j.sponsorship
         ? `<span class="pill sponsor">Sponsorship</span>`
         : "";
@@ -602,7 +613,11 @@
           </div>
         </div>
         <div class="job-actions">
-          <a class="apply" href="${escapeHtml(j.url)}" target="_blank" rel="noopener noreferrer">Apply</a>
+          ${
+            applyHref
+              ? `<a class="apply" href="${escapeHtml(applyHref)}" target="_blank" rel="noopener noreferrer">Apply</a>`
+              : `<span class="apply">Apply</span>`
+          }
           <div class="action-row">
             <button type="button" class="btn btn-ghost btn-sm" data-mark="applied" data-url="${escapeHtml(key)}">Applied</button>
             <button type="button" class="btn btn-ghost btn-sm" data-mark="flagged" data-url="${escapeHtml(key)}">Flag</button>
@@ -744,7 +759,7 @@
 
       const toSave =
         scanRegion === "all" ? jobs : jobs.filter((j) => j.region === scanRegion);
-      await fetch("/api/jobs/save", {
+      const saveRes = await fetch("/api/jobs/save", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -753,6 +768,20 @@
           errors: allErrors,
         }),
       });
+      if (!saveRes.ok) {
+        let msg = `Save failed (${saveRes.status})`;
+        try {
+          const errBody = await saveRes.json();
+          if (errBody && errBody.error) msg = String(errBody.error);
+        } catch (_) {}
+        throw new Error(msg);
+      }
+      const saved = await saveRes.json();
+      if (Array.isArray(saved.jobs)) {
+        if (scanRegion === "all") jobs = saved.jobs;
+        else jobs = jobs.filter((j) => j.region !== scanRegion).concat(saved.jobs);
+      }
+      if (Array.isArray(saved.errors) && saved.errors.length) showErrors(saved.errors);
       generatedAt = new Date().toISOString();
       rememberUrls();
       scanTick = "";
