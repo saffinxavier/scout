@@ -28,7 +28,7 @@ Local Flask app + scrapers that aggregate jobs onto **one dark job-board page**.
 ### UX
 - Dark-only job cards; Scan streams **one source at a time** for the **selected region** (not all sources if region filtered)
 - Default **Posted = last 24 hours** (region/date/status/search remembered in the browser)
-- Filters: region (with counts; India bucket labeled **BIG4 & Banks**), company (with counts), date range, **title/company search** (in the filter row/sheet), **New since last visit** (URLs seen this browser)
+- Filters: region (with counts; India bucket labeled **BIG4 & Banks**), company (with counts). Counts match the current status/date/search (Open hides applied/hidden). Date range, **title/company search** (in the filter row/sheet), **New since last visit** (URLs seen this browser)
 - Apply / **Flag** (look later) / Hide per job; phone top bar uses icon buttons
 - **Info** (i) lists sources that are on vs off (Welcome NL, GS, …) and last scan issues
 - Job cache is **per region** (`data/jobs-india.json`, `jobs-eu.json`, `jobs-uae.json`, `jobs-infopark.json`). Scan one region without wiping the others. **All** shows the merged list.

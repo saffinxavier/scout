@@ -428,11 +428,40 @@
     return map;
   }
 
+  function matchesSearch(job) {
+    const q = (qEl.value || "").trim().toLowerCase();
+    if (!q) return true;
+    const hay = `${job.title || ""} ${job.company || ""}`.toLowerCase();
+    return hay.includes(q);
+  }
+
+  function matchesMark(job) {
+    const mark = markFilterEl.value;
+    const st = jobMark(job);
+    if (mark === "open") return !st;
+    if (mark === "new") return isNewJob(job);
+    if (mark === "applied") return st === "applied";
+    if (mark === "flagged") return st === "flagged";
+    if (mark === "hidden") return st === "hidden";
+    return true;
+  }
+
+  // opts.region / opts.company override the dropdown so facet counts ignore that facet.
+  function matchesFilters(job, opts = {}) {
+    const region = opts.region !== undefined ? opts.region : regionEl.value;
+    const company = opts.company !== undefined ? opts.company : companyEl.value;
+    if (region !== "all" && job.region !== region) return false;
+    if (company !== "all" && job.company !== company) return false;
+    if (!inDateRange(job)) return false;
+    if (!matchesSearch(job)) return false;
+    return matchesMark(job);
+  }
+
   function rebuildRegionOptions() {
     const prev = regionEl.value || "all";
-    const dated = jobs.filter(inDateRange);
-    const byRegion = countBy(dated, (j) => j.region);
-    const total = dated.length;
+    const pool = jobs.filter((j) => matchesFilters(j, { region: "all" }));
+    const byRegion = countBy(pool, (j) => j.region);
+    const total = pool.length;
     const order = ["all", "india", "eu", "uae", "infopark"];
     regionEl.innerHTML = order
       .map((id) => {
@@ -446,19 +475,17 @@
 
   function rebuildCompanyOptions() {
     const prev = companyEl.value || "all";
-    const region = regionEl.value;
-    const pool = jobs.filter((j) => {
-      if (region !== "all" && j.region !== region) return false;
-      return inDateRange(j);
-    });
+    const pool = jobs.filter((j) => matchesFilters(j, { company: "all" }));
     const byCompany = countBy(pool, (j) => j.company);
     const names = [...byCompany.keys()].sort((a, b) => a.localeCompare(b));
+    if (prev !== "all" && !names.includes(prev)) names.push(prev);
+    names.sort((a, b) => a.localeCompare(b));
     companyEl.innerHTML =
       `<option value="all">All companies (${pool.length})</option>` +
       names
         .map(
           (n) =>
-            `<option value="${escapeHtml(n)}">${escapeHtml(n)} (${byCompany.get(n)})</option>`
+            `<option value="${escapeHtml(n)}">${escapeHtml(n)} (${byCompany.get(n) || 0})</option>`
         )
         .join("");
     if (prev === "all" || names.includes(prev)) {
@@ -482,27 +509,8 @@
   }
 
   function filtered() {
-    const region = regionEl.value;
-    const company = companyEl.value;
-    const mark = markFilterEl.value;
-    const q = (qEl.value || "").trim().toLowerCase();
     return jobs
-      .filter((j) => {
-        if (region !== "all" && j.region !== region) return false;
-        if (company !== "all" && j.company !== company) return false;
-        if (!inDateRange(j)) return false;
-        if (q) {
-          const hay = `${j.title || ""} ${j.company || ""}`.toLowerCase();
-          if (!hay.includes(q)) return false;
-        }
-        const st = jobMark(j);
-        if (mark === "open") return !st;
-        if (mark === "new") return isNewJob(j);
-        if (mark === "applied") return st === "applied";
-        if (mark === "flagged") return st === "flagged";
-        if (mark === "hidden") return st === "hidden";
-        return true;
-      })
+      .filter((j) => matchesFilters(j))
       .sort((a, b) => {
         const d = titlePriority(b) - titlePriority(a);
         if (d !== 0) return d;
@@ -562,7 +570,7 @@
       emptyState.classList.remove("hidden");
       const dateHint = dateRangeEl.value !== "all";
       emptyState.innerHTML = `
-        <p>No jobs match the current filters (${jobs.length} in the last scan).</p>
+        <p>No jobs match the current filters (0 shown of ${jobs.length} loaded).</p>
         ${
           dateHint
             ? `<p>The default date range is last 24 hours; many postings have no date.</p>

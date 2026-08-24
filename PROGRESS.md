@@ -10,7 +10,7 @@ Last updated: 2026-08-24
 - [x] Deloitte: South Asia only (`southasiacareers.deloitte.com` + India location gate); rejects `apply.deloitte.com` US URLs; adapter modules fully reloaded each scan
 - [x] Progressive scan: `/api/sources` + `/api/scan/one` — loads sources **one-by-one** for selected region only
 - [x] Default Posted filter = last 24 hours
-- [x] Region/company dropdown counts; scan button spinner
+- [x] Region/company dropdown counts follow current filters (status/search/date); 0-count company kept if selected; empty state says 0 shown of N loaded
 - [x] `OBJECTIVE.md` + `PROGRESS.md` for chat handoff
 - [x] Citi: Phenom `jobs.citi.com` (Workday CXS was 303 → maintenance HTML / empty JSON)
 - [x] Per-region job files; All = merged list (India scan no longer wipes EU/Infopark)
