@@ -10,7 +10,7 @@ from .config import ROOT
 from .scan import load_merged_jobs, run_scan
 
 WEB = ROOT / "web"
-SITE_FILES = ("index.html", "app.js", "style.css", "config.js")
+SITE_FILES = ("index.html", "app.js", "style.css", "config.js", "interview.js")
 
 
 def write_static_site(dest: Path, *, scan: bool = True) -> dict:

@@ -29,7 +29,9 @@ Local Flask app + scrapers that aggregate jobs onto **one dark job-board page**.
 - Dark-only job cards; Scan streams **one source at a time** for the **selected region** (not all sources if region filtered)
 - Default **Posted = last 24 hours** (region/date/status/search remembered in the browser)
 - Filters: region (with counts; India bucket labeled **BIG4 & Banks**), company (with counts). Counts match the current status/date/search (Open hides applied/hidden). Date range, **title/company search** (in the filter row/sheet), **New since last visit** (URLs seen this browser)
-- Apply / **Flag** (look later) / Hide per job; phone top bar uses icon buttons
+- Apply / **Flag** (look later) / Hide per job
+- Layout: desktop has a left **sidebar** (brand, Jobs/Interview nav, Scan, Info at status row, email + sign out at bottom) that **collapses to an icon rail** (chevron toggle, remembered in the browser); phones get a **bottom tab bar** (Jobs / Interview / Filters / Menu) — Menu opens a sheet with Scan, email, sign out. Job grid uses auto-fill columns (min 17rem) so it fills the available width
+- Login-gated **Interview** view for Deloitte Preliminary Screening prep, with Java / Spring Boot / Angular toggles that tailor role-fit answers
 - **Info** (i) lists sources that are on vs off (Welcome NL, GS, …) and last scan issues
 - Job cache is **per region** (`data/jobs-india.json`, `jobs-eu.json`, `jobs-uae.json`, `jobs-infopark.json`). Scan one region without wiping the others. **All** shows the merged list.
 - Hosted board: GitHub Pages + Action scan (no Scan in the browser). Gated email+password login (Supabase). Applied / Flagged / Hidden per user. Passwords created/reset in the Dashboard only.

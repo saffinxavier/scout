@@ -1,6 +1,6 @@
 # Scout — Progress
 
-Last updated: 2026-08-24
+Last updated: 2026-08-25
 
 ## Done
 - [x] Local Flask app + `config.yaml` sources + dark job-board UI
@@ -28,6 +28,10 @@ Last updated: 2026-08-24
 - [x] Region dropdown: India bucket labeled **BIG4 & Banks** (value still `india`)
 - [x] UAE region (Jaabz + Relocate UAE-only; same sponsorship/Java/years gates as Europe)
 - [x] Local `/api/jobs/save` carries over last-good jobs for failed sources (same as `run_scan`); unknown region is 400; region error lists are not mixed; Apply links allow http(s) only
+- [x] Deloitte Interview Prep screen inside the gated app: Jobs/Interview nav, Java/Spring Boot/Angular toggles, authored role-fit Q13-Q15 answers, and copy buttons
+- [x] Sidebar redesign: desktop left side menu (nav / Scan / account), mobile bottom tab bar (Jobs / Interview / Filters / Menu) with Menu bottom sheet; old crowded topbar removed. `check_ui.py` statically checks HTML/JS/CSS wiring
+- [x] Imported UI/UX skills into `.cursor/skills/`: `frontend-design` (Anthropic) + `ui-ux-pro-max` (SKILL.md + references)
+- [x] Collapsible sidebar (icon rail, `scout.sideCollapsed` in localStorage), auto-fill job grid columns (no more dead space between breakpoints, shell max 96rem), sheet Close buttons are X icons
 
 ## Known limitations
 - PwC still uses Workday CXS; when Workday is in maintenance the source fails with a clear error (no public Phenom board)
@@ -53,5 +57,5 @@ Last updated: 2026-08-24
 - Config: `config.yaml`
 - Scan/filter: `src/scan.py`, `src/filters.py`
 - Sources: `src/sources/`
-- UI: `web/index.html`, `web/app.js`, `web/style.css`
+- UI: `web/index.html`, `web/app.js`, `web/style.css` (wiring check: `check_ui.py`)
 - Profile reference: `Saffin profile.txt`

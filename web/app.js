@@ -24,7 +24,10 @@
   const loginSubmit = document.getElementById("loginSubmit");
   const userEmail = document.getElementById("userEmail");
   const signOutBtn = document.getElementById("signOutBtn");
-  const filterToggle = document.getElementById("filterToggle");
+  const filterOpeners = Array.from(document.querySelectorAll(".js-open-filters"));
+  const menuBtn = document.getElementById("menuBtn");
+  const menuClose = document.getElementById("menuClose");
+  const sideToggle = document.getElementById("sideToggle");
   const filterDone = document.getElementById("filterDone");
   const filterClose = document.getElementById("filterClose");
   const filterBackdrop = document.getElementById("filterBackdrop");
@@ -135,6 +138,7 @@
   function setScanLabel(text) {
     scanLabel.textContent = text;
     scanBtn.setAttribute("aria-label", text);
+    scanBtn.title = text;
   }
 
   function setScanning(on) {
@@ -362,18 +366,46 @@
     return "Could not sign in. Try again.";
   }
 
+  function setBackdrop(on) {
+    filterBackdrop.hidden = !on;
+    filterBackdrop.classList.toggle("hidden", !on);
+  }
+
   function openFilters() {
+    closeMenu();
     document.body.classList.add("filters-open");
-    filterBackdrop.hidden = false;
-    filterBackdrop.classList.remove("hidden");
-    filterToggle.setAttribute("aria-expanded", "true");
+    setBackdrop(true);
+    filterOpeners.forEach((b) => b.setAttribute("aria-expanded", "true"));
   }
 
   function closeFilters() {
     document.body.classList.remove("filters-open");
-    filterBackdrop.hidden = true;
-    filterBackdrop.classList.add("hidden");
-    filterToggle.setAttribute("aria-expanded", "false");
+    if (!document.body.classList.contains("menu-open")) setBackdrop(false);
+    filterOpeners.forEach((b) => b.setAttribute("aria-expanded", "false"));
+  }
+
+  function openMenu() {
+    closeFilters();
+    document.body.classList.add("menu-open");
+    setBackdrop(true);
+    menuBtn.setAttribute("aria-expanded", "true");
+  }
+
+  function closeMenu() {
+    document.body.classList.remove("menu-open");
+    if (!document.body.classList.contains("filters-open")) setBackdrop(false);
+    menuBtn.setAttribute("aria-expanded", "false");
+  }
+
+  const SIDE_KEY = "scout.sideCollapsed";
+
+  function setSideCollapsed(on) {
+    document.body.classList.toggle("side-collapsed", on);
+    sideToggle.setAttribute("aria-expanded", on ? "false" : "true");
+    const label = on ? "Expand menu" : "Collapse menu";
+    sideToggle.setAttribute("aria-label", label);
+    sideToggle.title = label;
+    localStorage.setItem(SIDE_KEY, on ? "1" : "0");
   }
 
   function startOfDay(d) {
@@ -904,13 +936,23 @@
   });
 
   signOutBtn.addEventListener("click", async () => {
+    closeMenu();
     if (sb) await sb.auth.signOut();
   });
 
-  filterToggle.addEventListener("click", openFilters);
+  filterOpeners.forEach((b) => b.addEventListener("click", openFilters));
   filterDone.addEventListener("click", closeFilters);
   if (filterClose) filterClose.addEventListener("click", closeFilters);
-  filterBackdrop.addEventListener("click", closeFilters);
+  filterBackdrop.addEventListener("click", () => {
+    closeFilters();
+    closeMenu();
+  });
+  menuBtn.addEventListener("click", openMenu);
+  menuClose.addEventListener("click", closeMenu);
+  sideToggle.addEventListener("click", () =>
+    setSideCollapsed(!document.body.classList.contains("side-collapsed"))
+  );
+  if (localStorage.getItem(SIDE_KEY) === "1") setSideCollapsed(true);
   sourceInfoBtn.addEventListener("click", openSourceDialog);
   sourceDialogClose.addEventListener("click", closeSourceDialog);
   sourceDialog.addEventListener("close", () => {
@@ -923,6 +965,7 @@
       return;
     }
     closeFilters();
+    closeMenu();
   });
 
   dateRangeEl.addEventListener("change", () => {
