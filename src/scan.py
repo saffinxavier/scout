@@ -13,7 +13,7 @@ from .filters import dedupe_by_url, passes_filters
 from .http_util import make_client
 from .models import Job, SourceError
 
-REGIONS = ("india", "eu", "infopark", "uae")
+REGIONS = ("india", "eu", "infopark", "uae", "remote")
 EMPTY_FETCH_MSG = "0 jobs returned (empty, blocked, or HTML adapter missed the board)"
 
 

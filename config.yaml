@@ -105,9 +105,30 @@ sources:
   - id: remotive
     enabled: true
     region: eu
+    geo: eu
     sponsorship_board: true
     empty_ok: true
     note: "Remotive.com JSON is a 20-job teaser (search ignored; HTML/RSS Cloudflare). Adapter also reads Jobicy Java remote JSON; 0 means no Java+EU/worldwide titles today."
+
+  # --- Remote (India-eligible: India / APAC / Asia / Worldwide; no visa gate) ---
+  - id: remotive_remote
+    enabled: true
+    region: remote
+    geo: india_eligible
+    sponsorship_board: false
+    empty_ok: true
+    note: "Same Remotive+Jobicy JSON as remotive, geo=india_eligible instead of EU."
+
+  - id: himalayas
+    enabled: true
+    region: remote
+    sponsorship_board: false
+    empty_ok: true
+    max_pages: 4
+    queries:
+      - java
+      - spring boot
+    note: "Himalayas public jobs API; keeps India/APAC/worldwide locationRestrictions."
 
   # --- India Big 4 + banks ---
   - id: jpmorgan

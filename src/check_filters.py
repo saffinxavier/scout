@@ -82,9 +82,35 @@ def main() -> None:
     )
     assert india is not None and india.sponsorship is False
 
+    # Remote: same as India — Java gates, no sponsorship/visa gate
+    remote_keep = _pass(
+        title="Java Engineer",
+        region="remote",
+        source="himalayas",
+        location="Remote (India)",
+        description="Fully remote Spring Boot role",
+    )
+    assert remote_keep is not None and remote_keep.sponsorship is False
+    remote_drop_arch = _pass(
+        title="Java Architect",
+        region="remote",
+        source="remotive_remote",
+        location="Remote (Worldwide)",
+    )
+    assert remote_drop_arch is None
+    remote_drop_no_java = _pass(
+        title="Python Engineer",
+        region="remote",
+        source="himalayas",
+        location="Remote (India)",
+    )
+    assert remote_drop_no_java is None
+
     # Experience fit (3.5y profile, max_years=4)
     assert inferred_min_years("3-5 years Java") == 3
     assert inferred_min_years("8+ years of experience") == 8
+    assert inferred_min_years("890+ Clients in APAC") is None
+    assert inferred_min_years("6+ Years experience; 890+ Clients") == 6
     keep_range = _pass(title="Java Developer", description="3-5 years experience, visa sponsorship")
     assert keep_range is not None
     drop_senior = _pass(title="Java Developer", description="8+ years experience, visa sponsorship")
@@ -206,6 +232,7 @@ def main() -> None:
             {"region": "infopark", "url": "c"},
             {"region": "eu", "url": "d"},
             {"region": "uae", "url": "f"},
+            {"region": "remote", "url": "g"},
             {"region": "other", "url": "e"},
         ]
     )
@@ -213,6 +240,7 @@ def main() -> None:
     assert [j["url"] for j in split["eu"]] == ["b", "d"]
     assert [j["url"] for j in split["infopark"]] == ["c"]
     assert [j["url"] for j in split["uae"]] == ["f"]
+    assert [j["url"] for j in split["remote"]] == ["g"]
 
     import json
     import tempfile
@@ -328,7 +356,12 @@ def main() -> None:
     assert uae_jobs[0].region == "uae" and uae_jobs[0].source == "relocate_me_uae"
     assert is_java_title("Senior Java Engineer")
     assert not is_java_title("Senior Golang Developer")
-    from .sources.remotive import add_jobicy_rows, add_remotive_rows
+    from .sources.remotive import (
+        add_jobicy_rows,
+        add_remotive_rows,
+        india_eligible_countries,
+        india_eligible_ok,
+    )
 
     rem: list[Job] = []
     add_remotive_rows(
@@ -353,6 +386,9 @@ def main() -> None:
         },
         rem,
         set(),
+        region="eu",
+        geo="eu",
+        source_id="remotive",
     )
     assert len(rem) == 1 and rem[0].company == "Acme"
     icy: list[Job] = []
@@ -378,8 +414,56 @@ def main() -> None:
         },
         icy,
         set(),
+        region="eu",
+        geo="eu",
+        source_id="remotive",
     )
     assert len(icy) == 1 and "Europe" in icy[0].location
+
+    rem_in: list[Job] = []
+    add_jobicy_rows(
+        {
+            "jobs": [
+                {
+                    "jobTitle": "Java Backend Engineer",
+                    "companyName": "BotCo",
+                    "jobGeo": "Europe",
+                    "url": "https://jobicy.com/jobs/java-eu-remote",
+                    "jobDescription": "Spring",
+                },
+                {
+                    "jobTitle": "Java Backend Engineer",
+                    "companyName": "BotCo",
+                    "jobGeo": "APAC",
+                    "url": "https://jobicy.com/jobs/java-apac-remote",
+                    "jobDescription": "Spring",
+                },
+                {
+                    "jobTitle": "Java Backend Engineer",
+                    "companyName": "WorldCo",
+                    "jobGeo": "Worldwide",
+                    "url": "https://jobicy.com/jobs/java-ww",
+                    "jobDescription": "Spring",
+                },
+            ]
+        },
+        rem_in,
+        set(),
+        region="remote",
+        geo="india_eligible",
+        source_id="remotive_remote",
+    )
+    assert len(rem_in) == 2
+    assert {j.source for j in rem_in} == {"remotive_remote"}
+    assert all(j.region == "remote" for j in rem_in)
+    assert india_eligible_ok("India")
+    assert india_eligible_ok("APAC")
+    assert india_eligible_ok("Worldwide")
+    assert not india_eligible_ok("USA")
+    assert not india_eligible_ok("Europe")
+    assert india_eligible_countries(None)
+    assert india_eligible_countries(["India", "United States"])
+    assert not india_eligible_countries(["Spain"])
     assert _cloudflare_block("<html>Just a moment... cloudflare challenge-platform</html>")
     assert not _cloudflare_block('<a href="/jobs/266191-senior-java-engineer">Java</a>')
 

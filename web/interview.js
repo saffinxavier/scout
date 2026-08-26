@@ -7,7 +7,7 @@
   if (!navBtns.length || !interviewScreen || !interviewBody || !chips.length) return;
 
   const PREFS_KEY = "scout.interviewPrefs";
-  const DEFAULT_TOGGLES = { java: true, springboot: true, angular: false };
+  const DEFAULT_TOGGLES = { java: true, springboot: true, angular: false, kafka: false };
 
   const INTERVIEW = {
     common: [
@@ -96,6 +96,10 @@
           "This role attracted me because it strongly aligns with my hands-on work in Java and Spring Boot backend development, especially building REST APIs and microservices for real-world business workflows.",
         fullstack:
           "This role attracted me because it combines backend ownership in Java with full-stack collaboration. I am interested in contributing across API and UI layers, especially where Angular and backend integration are critical.",
+        kafka:
+          "This role attracted me because it aligns with my Java Spring Boot microservices background and my interest in event-driven systems. I have used Kafka for asynchronous notification processing and want to deepen that work in larger enterprise architectures.",
+        fullstack_kafka:
+          "This role attracted me because it spans Java backend, Angular collaboration, and event-driven integration. I am interested in contributing across APIs and UI while applying Kafka-based async flows where reliable notifications and decoupling matter.",
       },
       q14: {
         question: "What skills and experience make you a strong fit?",
@@ -105,6 +109,10 @@
           "I have around 3.5 years of experience in Java Spring Boot backend development, working with microservices, REST APIs, Spring Data JPA, Hibernate, and PostgreSQL. I also bring experience with Spring Security, OAuth2, JWT, and Keycloak for secure backend services.",
         fullstack:
           "I have around 3.5 years of backend experience in Java and Spring Boot, plus practical Angular experience for building and integrating UI flows with APIs. This helps me understand both service design and frontend consumption while keeping security and performance in mind.",
+        kafka:
+          "I have around 3.5 years of Java Spring Boot microservices experience with REST APIs, Spring Data JPA, Hibernate, and PostgreSQL, plus hands-on Kafka work for async notification processing in an HRMS product. I also use Spring Security, OAuth2, JWT, and Keycloak for secure services.",
+        fullstack_kafka:
+          "I have around 3.5 years of Java Spring Boot backend experience, practical Angular for API-driven UI flows, and Kafka for event-driven notifications. That mix helps me connect service design, async messaging, and frontend consumption with security and reliability in mind.",
       },
       q15: {
         question: "Is there anything you would like to know about Deloitte?",
@@ -114,6 +122,10 @@
           "Yes. I would like to know more about the backend architecture and service landscape, such as microservice patterns, deployment model, and the expectations around API quality and ownership for this role.",
         fullstack:
           "Yes. I would like to understand how responsibilities are split across Angular and backend work, the team structure for full-stack delivery, and the opportunities to grow in both frontend and backend areas.",
+        kafka:
+          "Yes. I would like to understand how the team uses messaging and event-driven patterns—especially Kafka topics, consumers, and reliability expectations—and how that fits with the broader microservices ownership for this role.",
+        fullstack_kafka:
+          "Yes. I would like to understand how Angular and backend ownership are split, and how Kafka or other event-driven flows are used across services and UI-facing features, plus growth paths across those areas.",
       },
     },
   };
@@ -128,8 +140,10 @@
       .replaceAll('"', "&quot;");
   }
 
-  function flavorFromToggles(javaOn, springOn, angularOn) {
+  function flavorFromToggles(javaOn, springOn, angularOn, kafkaOn) {
+    if (angularOn && kafkaOn) return "fullstack_kafka";
     if (angularOn) return "fullstack";
+    if (kafkaOn) return "kafka";
     if (springOn) return "backend";
     return javaOn ? "core" : "core";
   }
@@ -147,7 +161,8 @@
       const java = typeof raw.java === "boolean" ? raw.java : DEFAULT_TOGGLES.java;
       const springboot = typeof raw.springboot === "boolean" ? raw.springboot : DEFAULT_TOGGLES.springboot;
       const angular = typeof raw.angular === "boolean" ? raw.angular : DEFAULT_TOGGLES.angular;
-      toggles = { java, springboot, angular };
+      const kafka = typeof raw.kafka === "boolean" ? raw.kafka : DEFAULT_TOGGLES.kafka;
+      toggles = { java, springboot, angular, kafka };
     } catch (_) {
       toggles = { ...DEFAULT_TOGGLES };
     }
@@ -163,7 +178,7 @@
   }
 
   function allQuestions() {
-    const flavor = flavorFromToggles(toggles.java, toggles.springboot, toggles.angular);
+    const flavor = flavorFromToggles(toggles.java, toggles.springboot, toggles.angular, toggles.kafka);
     return [
       ...INTERVIEW.common.slice(0, 12),
       {
@@ -258,9 +273,11 @@
     const params = new URLSearchParams(location.search);
     if (params.get("selftest") !== "1") return;
     try {
-      console.assert(flavorFromToggles(true, true, false) === "backend", "Expected backend for Java+Spring");
-      console.assert(flavorFromToggles(true, false, false) === "core", "Expected core for Java-only");
-      console.assert(flavorFromToggles(true, false, true) === "fullstack", "Expected fullstack when Angular enabled");
+      console.assert(flavorFromToggles(true, true, false, false) === "backend", "Expected backend for Java+Spring");
+      console.assert(flavorFromToggles(true, false, false, false) === "core", "Expected core for Java-only");
+      console.assert(flavorFromToggles(true, false, true, false) === "fullstack", "Expected fullstack when Angular enabled");
+      console.assert(flavorFromToggles(true, true, false, true) === "kafka", "Expected kafka when Kafka enabled without Angular");
+      console.assert(flavorFromToggles(true, true, true, true) === "fullstack_kafka", "Expected fullstack_kafka when Angular+Kafka");
       console.info("interview selftest passed");
     } catch (err) {
       console.error("interview selftest failed", err);

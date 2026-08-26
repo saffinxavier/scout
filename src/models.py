@@ -11,7 +11,7 @@ class Job:
     location: str
     url: str
     source: str
-    region: str  # india | eu | infopark | uae
+    region: str  # india | eu | infopark | uae | remote
     sponsorship: bool
     posted_at: str | None = None  # YYYY-MM-DD when known
     description: str = ""

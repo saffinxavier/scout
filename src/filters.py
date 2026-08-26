@@ -15,10 +15,10 @@ _RANGE_YEARS = re.compile(
     re.I,
 )
 _PLUS_YEARS = re.compile(
-    r"(\d+)\s*\+\s*(?:years?|yrs?|yoe|exp\.?)?",
+    r"(\d+)\s*\+\s*(?:years?|yrs?|yoe|exp\.?)",
     re.I,
 )
-_BARE_PLUS = re.compile(r"\((\d+)\+\)|(\d+)\+\s*(?:years?|yrs?)?", re.I)
+_BARE_PLUS = re.compile(r"\((\d+)\+\)|(\d+)\+\s*(?:years?|yrs?)", re.I)
 _MIN_YEARS = re.compile(
     r"(?:minimum|min\.?|at\s+least|over|more\s+than)\s+(\d+)\s*\+?\s*(?:years?|yrs?)",
     re.I,
@@ -110,7 +110,9 @@ def inferred_min_years(text: str) -> int | None:
     if not mins:
         return None
     # If multiple signals, use the highest floor (strictest requirement).
-    return max(mins)
+    # Ignore absurd parses (e.g. "890+ Clients" before the years-required fix).
+    sane = [n for n in mins if 0 < n <= 40]
+    return max(sane) if sane else None
 
 
 def is_excluded_seniority(job: Job, patterns: Iterable[str]) -> bool:
@@ -187,7 +189,7 @@ def passes_filters(
             return None
         job.sponsorship = True
     else:
-        # India / Infopark: no sponsorship gate
+        # India / Infopark / Remote: no sponsorship gate
         job.sponsorship = False
 
     return job

@@ -6,6 +6,9 @@ Local job listing aggregator for **Java / Spring Boot** roles that fit a **~3.5y
 - **Europe:** sponsorship / relocation boards (Relocate.me, Welcome to the Netherlands, Jaabz) plus EU/remote boards filtered for visa/sponsorship signals
 - **UAE:** Relocate.me UAE country listings + Jaabz UAE visa-sponsorship board (same Java/visa gates as Europe)
 - **Infopark:** [infopark.in/companies-job](https://infopark.in/companies-job)
+- **Remote:** India-eligible fully remote (Remotive + Jobicy + Himalayas) — India / APAC / Asia / Worldwide; no visa gate
+
+Region/source detail (on/off, fetch style, notes): [`SOURCES.md`](SOURCES.md).
 
 - Scan now. Company / region / date filters. Apply links. No auto-apply.
 - Cache is one JSON file per region; **All** merges them.
@@ -45,17 +48,17 @@ Filter self-check:
 | Experience | Drops postings whose stated minimum is **> 4 years** (`5+`, `8+`); keeps `3-5` and unknown |
 | Education | Drops Masters / MBA / M.Tech **requirements** |
 | Europe / UAE sponsorship | Kept if source is a sponsorship board **or** text matches visa/sponsorship keywords |
-| India / Infopark | No sponsorship gate |
-| UI filters | Region (incl. UAE, Infopark), **company**, date range on the current scan |
+| India / Infopark / Remote | No sponsorship gate |
+| UI filters | Region (incl. UAE, Infopark, Remote), **company**, date range on the current scan |
 
-Edit sources and keywords in [`config.yaml`](config.yaml).
+Edit sources and keywords in [`config.yaml`](config.yaml). Full region/source map: [`SOURCES.md`](SOURCES.md).
 
 ## Notes
 
 - JPM and **KPMG** use Oracle HCM JSON; Citi Phenom; PwC Workday; **EY** and Deloitte use Jobs2Web RSS (India gated). GS/MS stay off.
-- Infopark is a local Kochi board: it skips the Java/Spring and Lead/Architect gates so you can browse what is posted. India, Europe, and UAE stay Java/Spring-only with seniority filters.
+- Infopark is a local Kochi board: it skips the Java/Spring and Lead/Architect gates so you can browse what is posted. India, Europe, UAE, and Remote stay Java/Spring-only with seniority filters. Remote keeps India-eligible geos only (not US-only / Europe-only).
 - Scrapers are for **personal** use; sites change often. Failed sources show in the warning banner without blocking others.
-- Pagination: Infopark, Jaabz, Relocate (intl board), Arbeitnow, JPM, and Workday (Citi/PwC) walk multiple pages. Remotive.com JSON is a 20-job teaser; the adapter also reads Jobicy’s Java remote JSON. HTML career scrapers (GS/MS/Big 4 landing pages) stay single-page / best-effort.
+- Pagination: Infopark, Jaabz, Relocate (intl board), Arbeitnow, JPM, Workday (Citi/PwC), and Himalayas walk multiple pages. Remotive.com JSON is a 20-job teaser; the adapter also reads Jobicy’s Java remote JSON (`remotive` = EU geo, `remotive_remote` = India-eligible). HTML career scrapers (GS/MS/Big 4 landing pages) stay single-page / best-effort.
 - SSL verify is off by default in config for flaky career CDNs on Windows — local-only tool.
 
 ## Hosted URL (phone + other laptops)

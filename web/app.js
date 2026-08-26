@@ -44,6 +44,7 @@
     eu: "Europe",
     uae: "UAE",
     infopark: "Infopark",
+    remote: "Remote",
   };
 
   const cfg = window.SCOUT || {};
@@ -93,7 +94,7 @@
     try {
       const p = JSON.parse(localStorage.getItem(PREFS_KEY) || "null");
       if (!p || typeof p !== "object") return;
-      const regions = ["all", "india", "eu", "uae", "infopark"];
+      const regions = ["all", "india", "eu", "uae", "infopark", "remote"];
       const dates = ["all", "24h", "48h", "7d", "custom"];
       const marks = ["open", "new", "applied", "flagged", "hidden", "all"];
       if (regions.includes(p.region)) regionEl.value = p.region;
@@ -494,7 +495,7 @@
     const pool = jobs.filter((j) => matchesFilters(j, { region: "all" }));
     const byRegion = countBy(pool, (j) => j.region);
     const total = pool.length;
-    const order = ["all", "india", "eu", "uae", "infopark"];
+    const order = ["all", "india", "eu", "uae", "infopark", "remote"];
     regionEl.innerHTML = order
       .map((id) => {
         const n = id === "all" ? total : byRegion.get(id) || 0;
@@ -557,6 +558,7 @@
     if (region === "eu") return "region-eu";
     if (region === "uae") return "region-uae";
     if (region === "infopark") return "region-infopark";
+    if (region === "remote") return "region-remote";
     return "region-india";
   }
 

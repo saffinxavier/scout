@@ -1,6 +1,6 @@
 # Scout — Progress
 
-Last updated: 2026-08-25
+Last updated: 2026-08-26
 
 ## Done
 - [x] Local Flask app + `config.yaml` sources + dark job-board UI
@@ -28,10 +28,13 @@ Last updated: 2026-08-25
 - [x] Region dropdown: India bucket labeled **BIG4 & Banks** (value still `india`)
 - [x] UAE region (Jaabz + Relocate UAE-only; same sponsorship/Java/years gates as Europe)
 - [x] Local `/api/jobs/save` carries over last-good jobs for failed sources (same as `run_scan`); unknown region is 400; region error lists are not mixed; Apply links allow http(s) only
-- [x] Deloitte Interview Prep screen inside the gated app: Jobs/Interview nav, Java/Spring Boot/Angular toggles, authored role-fit Q13-Q15 answers, and copy buttons
+- [x] Deloitte Interview Prep screen inside the gated app: Jobs/Interview nav, Java/Spring Boot/Angular/Kafka toggles, authored role-fit Q13-Q15 answers, and copy buttons
 - [x] Sidebar redesign: desktop left side menu (nav / Scan / account), mobile bottom tab bar (Jobs / Interview / Filters / Menu) with Menu bottom sheet; old crowded topbar removed. `check_ui.py` statically checks HTML/JS/CSS wiring
 - [x] Imported UI/UX skills into `.cursor/skills/`: `frontend-design` (Anthropic) + `ui-ux-pro-max` (SKILL.md + references)
+- [x] MyGoTo catalog setup: installed Taste (`design-taste-frontend`), Web Interface Guidelines, Matt Pocock pack, `i-have-adhd`, Design Motion Principles into `.agents/skills` + mirrored into `.cursor/skills` (DeploySafe stays browser-only)
 - [x] Collapsible sidebar (icon rail, `scout.sideCollapsed` in localStorage), auto-fill job grid columns (no more dead space between breakpoints, shell max 96rem), sheet Close buttons are X icons
+- [x] **Remote** region (India-eligible): `remotive_remote` (Remotive+Jobicy geo gate) + Himalayas public API; no visa gate; cache `data/jobs-remote.json`
+- [x] [`SOURCES.md`](SOURCES.md) — regions, filter matrix, and per-source on/off + fetch notes
 
 ## Known limitations
 - PwC still uses Workday CXS; when Workday is in maintenance the source fails with a clear error (no public Phenom board)
@@ -41,7 +44,8 @@ Last updated: 2026-08-25
 - Welcome NL (`welcome_nl`) is **disabled**: `welcometothenetherlands.com/vacatures/` redirects to Everaert internships; `welcome-to-nl.nl/jobs` currently shows 0 jobs
 - Arbeitnow may rate-limit (429) after several pages — adapter keeps partial results
 - Relocate.me `/search?query=` redirects to the unfiltered board; EU adapter searches `international-jobs?query=java`. UAE adapter uses `/united-arab-emirates` and keeps only that country slug (does not crawl the global intl board)
-- Remotive.com JSON ignores search (always ~20 mixed jobs; HTML/RSS Cloudflare 403). Adapter also reads Jobicy’s Java remote JSON; `empty_ok` so a real empty Java+EU set is not treated as a fetch error
+- Remotive.com JSON ignores search (always ~20 mixed jobs; HTML/RSS Cloudflare 403). Adapter also reads Jobicy’s Java remote JSON; `empty_ok` so a real empty set is not treated as a fetch error. EU uses `geo: eu`; Remote uses `geo: india_eligible`
+- Remote India-eligible list can be thin after Java + years filters; US-only / Europe-only postings are dropped by design
 - Jaabz works locally; GitHub Actions IPs get Cloudflare 403 — both `run_scan` and local progressive `/api/jobs/save` keep the last saved jobs of failed sources (`carry_over_failed_sources`) and append “kept N previously saved job(s)” to the error. Scan Europe/UAE locally + commit `data/jobs-eu.json` / `jobs-uae.json` to refresh hosted Jaabz
 - UAE Java/Spring list will often be thin: many Dubai ads want 5–8+ years and are dropped by `max_years=4`
 - Year/degree filters are best-effort when adapters only have titles (no full JD)
