@@ -1,6 +1,204 @@
 {
-  "count": 346,
+  "count": 365,
   "jobs": [
+    {
+      "company": "Voyon Technology Pvt Ltd",
+      "description": "Software Sales Executive (North Kerala)",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-08-27",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Software Sales Executive (North Kerala)",
+      "url": "https://infopark.in/company-jobs/details/372/25187"
+    },
+    {
+      "company": "Voxtron Solutions LLP",
+      "description": "Senior Test Engineer-ERP",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-08-27",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Senior Test Engineer-ERP",
+      "url": "https://infopark.in/company-jobs/details/336/25183"
+    },
+    {
+      "company": "Grapelime Innovations Private Limited.",
+      "description": "Senior Business Development Specialist \u2013 IT Services",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-08-27",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Senior Business Development Specialist \u2013 IT Services",
+      "url": "https://infopark.in/company-jobs/details/296/25191"
+    },
+    {
+      "company": "NDimensionZ Solutions Pvt.Ltd.",
+      "description": "Odoo Developer",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-08-27",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Odoo Developer",
+      "url": "https://infopark.in/company-jobs/details/209/25185"
+    },
+    {
+      "company": "QC Verify Private Limited",
+      "description": "Machine Learning Engineer (Generative AI & Document Intelligence)",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-08-27",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Machine Learning Engineer (Generative AI & Document Intelligence)",
+      "url": "https://infopark.in/company-jobs/details/257/25186"
+    },
+    {
+      "company": "UROLIME",
+      "description": "HR Manager",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-08-27",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "HR Manager",
+      "url": "https://infopark.in/company-jobs/details/118/25190"
+    },
+    {
+      "company": "Aabasoft Technologies India Private Limited",
+      "description": "Full Stack Developer (Angular & .NET)",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-08-27",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Full Stack Developer (Angular & .NET)",
+      "url": "https://infopark.in/company-jobs/details/95/25184"
+    },
+    {
+      "company": "LucidPlus Infotech Pvt Ltd",
+      "description": "B2B Sales Executive \u2013 Software & IT",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-08-27",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "B2B Sales Executive \u2013 Software & IT",
+      "url": "https://infopark.in/company-jobs/details/41/25192"
+    },
+    {
+      "company": "2Base Technologies Pvt Ltd",
+      "description": "Visual Designer",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-08-24",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Visual Designer",
+      "url": "https://infopark.in/company-jobs/details/312/25174"
+    },
+    {
+      "company": "Fingent Global Solutions",
+      "description": "Sr.Executive / Executive Operations",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-08-24",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Sr.Executive / Executive Operations",
+      "url": "https://infopark.in/company-jobs/details/83/25181"
+    },
+    {
+      "company": "Infintor Solutions LLP",
+      "description": "Odoo Project Manager / Implementation Lead",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-08-24",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Odoo Project Manager / Implementation Lead",
+      "url": "https://infopark.in/company-jobs/details/380/25180"
+    },
+    {
+      "company": "2Base Technologies Pvt Ltd",
+      "description": "Marketing & Growth Lead",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-08-24",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Marketing & Growth Lead",
+      "url": "https://infopark.in/company-jobs/details/312/25173"
+    },
+    {
+      "company": "Infintor Solutions LLP",
+      "description": "Digital Marketing Executive",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-08-24",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Digital Marketing Executive",
+      "url": "https://infopark.in/company-jobs/details/380/25178"
+    },
+    {
+      "company": "Infintor Solutions LLP",
+      "description": "Business Development Manager ( odoo )",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-08-24",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Business Development Manager ( odoo )",
+      "url": "https://infopark.in/company-jobs/details/380/25179"
+    },
+    {
+      "company": "2Base Technologies Pvt Ltd",
+      "description": "Business Development Manager",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-08-24",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Business Development Manager",
+      "url": "https://infopark.in/company-jobs/details/312/25170"
+    },
+    {
+      "company": "iDatalytics Pvt. Ltd.",
+      "description": "Business Development Executive (BDE)",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-08-24",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Business Development Executive (BDE)",
+      "url": "https://infopark.in/company-jobs/details/91/25182"
+    },
+    {
+      "company": "2Base Technologies Pvt Ltd",
+      "description": "Associate - System Engineer",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-08-24",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Associate - System Engineer",
+      "url": "https://infopark.in/company-jobs/details/312/25172"
+    },
+    {
+      "company": "2Base Technologies Pvt Ltd",
+      "description": "Associate - QA Engineer",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-08-24",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Associate - QA Engineer",
+      "url": "https://infopark.in/company-jobs/details/312/25169"
+    },
     {
       "company": "UROLIME",
       "description": "System Engineer",
@@ -134,17 +332,6 @@
       "url": "https://infopark.in/company-jobs/details/378/25154"
     },
     {
-      "company": "WORKSENT TECHNOLOGIES PVT LTD",
-      "description": "SOC Analyst \u2013 L1",
-      "location": "Infopark, Kochi",
-      "posted_at": "2026-08-20",
-      "region": "infopark",
-      "source": "infopark",
-      "sponsorship": false,
-      "title": "SOC Analyst \u2013 L1",
-      "url": "https://infopark.in/company-jobs/details/164/25150"
-    },
-    {
       "company": "SE-Mentor Solutions",
       "description": "Oracle Database Migration Engineer/ Migraton Analyst",
       "location": "Infopark, Kochi",
@@ -198,17 +385,6 @@
       "sponsorship": false,
       "title": "Technical Program Manager",
       "url": "https://infopark.in/company-jobs/details/85/25141"
-    },
-    {
-      "company": "iCodeBees Private Limited",
-      "description": "Power Platform Consultant",
-      "location": "Infopark, Kochi",
-      "posted_at": "2026-08-19",
-      "region": "infopark",
-      "source": "infopark",
-      "sponsorship": false,
-      "title": "Power Platform Consultant",
-      "url": "https://infopark.in/company-jobs/details/450/25137"
     },
     {
       "company": "Jachoos Technologies Private Limited",
@@ -453,6 +629,17 @@
       "url": "https://infopark.in/company-jobs/details/371/25086"
     },
     {
+      "company": "Empress InfoTech",
+      "description": "Software Engineer",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-08-14",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Software Engineer",
+      "url": "https://infopark.in/company-jobs/details/70/25087"
+    },
+    {
       "company": "Nesa Software Pvt Ltd",
       "description": "Senior Test Engineer",
       "location": "Infopark, Kochi",
@@ -561,6 +748,17 @@
       "sponsorship": false,
       "title": "Technical Manager",
       "url": "https://infopark.in/company-jobs/details/468/25058"
+    },
+    {
+      "company": "JTSi Technologies India Private Limited",
+      "description": "Project Manager \u2013 .NET required for JTSi Technologies India Pvt Ltd at Kochi Infopark.",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-08-12",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Project Manager \u2013 .NET required for JTSi Technologies India Pvt Ltd at Kochi Infopark.",
+      "url": "https://infopark.in/company-jobs/details/55/25045"
     },
     {
       "company": "GALTech Technologies Pvt Ltd",
@@ -761,6 +959,28 @@
       "url": "https://infopark.in/company-jobs/details/59/24990"
     },
     {
+      "company": "Nesa Software Pvt Ltd",
+      "description": "Finance Manager",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-08-06",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Finance Manager",
+      "url": "https://infopark.in/company-jobs/details/530/25008"
+    },
+    {
+      "company": "Nesa Software Pvt Ltd",
+      "description": "DevOps Engineer - Fresher",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-08-06",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "DevOps Engineer - Fresher",
+      "url": "https://infopark.in/company-jobs/details/530/25007"
+    },
+    {
       "company": "Innovature Software Labs (P) Ltd",
       "description": "Data Engineer",
       "location": "Infopark, Kochi",
@@ -913,6 +1133,17 @@
       "sponsorship": false,
       "title": "Full-Stack Tech Lead \u2013 AI Best Practices (AIBP) - Remote",
       "url": "https://infopark.in/company-jobs/details/102/24961"
+    },
+    {
+      "company": "Empress InfoTech",
+      "description": "Solutions Consultant",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-08-03",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Solutions Consultant",
+      "url": "https://infopark.in/company-jobs/details/70/24932"
     },
     {
       "company": "Global Surf IT Pvt Ltd",
@@ -1267,17 +1498,6 @@
       "url": "https://infopark.in/company-jobs/details/187/24833"
     },
     {
-      "company": "NAS Infosolutions Pvt Ltd",
-      "description": "Technical Consultant (ERP / SAP Business One)",
-      "location": "Infopark, Kochi",
-      "posted_at": "2026-07-24",
-      "region": "infopark",
-      "source": "infopark",
-      "sponsorship": false,
-      "title": "Technical Consultant (ERP / SAP Business One)",
-      "url": "https://infopark.in/company-jobs/details/278/24810"
-    },
-    {
       "company": "Array Platforms Pvt Ltd",
       "description": "Project Manager",
       "location": "Infopark, Kochi",
@@ -1300,39 +1520,6 @@
       "url": "https://infopark.in/company-jobs/details/49/24822"
     },
     {
-      "company": "Simelabs - An Astek Company",
-      "description": "Lead AI/ML Engineer",
-      "location": "Infopark, Kochi",
-      "posted_at": "2026-07-24",
-      "region": "infopark",
-      "source": "infopark",
-      "sponsorship": false,
-      "title": "Lead AI/ML Engineer",
-      "url": "https://infopark.in/company-jobs/details/378/24812"
-    },
-    {
-      "company": "NAS Infosolutions Pvt Ltd",
-      "description": "Functional Consultant (ERP/ SAP Business One)",
-      "location": "Infopark, Kochi",
-      "posted_at": "2026-07-24",
-      "region": "infopark",
-      "source": "infopark",
-      "sponsorship": false,
-      "title": "Functional Consultant (ERP/ SAP Business One)",
-      "url": "https://infopark.in/company-jobs/details/278/24809"
-    },
-    {
-      "company": "Simelabs - An Astek Company",
-      "description": "ERP Consultant",
-      "location": "Infopark, Kochi",
-      "posted_at": "2026-07-24",
-      "region": "infopark",
-      "source": "infopark",
-      "sponsorship": false,
-      "title": "ERP Consultant",
-      "url": "https://infopark.in/company-jobs/details/378/24814"
-    },
-    {
       "company": "MapleTech Space Pvt Ltd",
       "description": "Digital Marketing Executive",
       "location": "Infopark, Kochi",
@@ -1342,17 +1529,6 @@
       "sponsorship": false,
       "title": "Digital Marketing Executive",
       "url": "https://infopark.in/company-jobs/details/292/24821"
-    },
-    {
-      "company": "Simelabs - An Astek Company",
-      "description": "Cloud Administrator",
-      "location": "Infopark, Kochi",
-      "posted_at": "2026-07-24",
-      "region": "infopark",
-      "source": "infopark",
-      "sponsorship": false,
-      "title": "Cloud Administrator",
-      "url": "https://infopark.in/company-jobs/details/378/24813"
     },
     {
       "company": "Distinct Infotech Solutions",
@@ -1408,6 +1584,17 @@
       "sponsorship": false,
       "title": "Immediate Opening for Data Engineer",
       "url": "https://infopark.in/company-jobs/details/36/24785"
+    },
+    {
+      "company": "Voyon Technology Pvt Ltd",
+      "description": "Business Development Executive - UAE",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-07-22",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Business Development Executive - UAE",
+      "url": "https://infopark.in/company-jobs/details/372/24779"
     },
     {
       "company": "Distinct Infotech Solutions",
@@ -1498,17 +1685,6 @@
       "url": "https://infopark.in/company-jobs/details/132/24717"
     },
     {
-      "company": "Cascade Revenue Management Pvt. Ltd",
-      "description": "Authorisation Specialist",
-      "location": "Infopark, Kochi",
-      "posted_at": "2026-07-17",
-      "region": "infopark",
-      "source": "infopark",
-      "sponsorship": false,
-      "title": "Authorisation Specialist",
-      "url": "https://infopark.in/company-jobs/details/138/24708"
-    },
-    {
       "company": "NDimensionZ Solutions Pvt.Ltd.",
       "description": "Senior Product Owner \u2013 IaaS",
       "location": "Infopark, Kochi",
@@ -1575,6 +1751,17 @@
       "url": "https://infopark.in/company-jobs/details/95/24631"
     },
     {
+      "company": "Aabasoft Technologies India Private Limited",
+      "description": "Academic Counsellor",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-07-14",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Academic Counsellor",
+      "url": "https://infopark.in/company-jobs/details/95/24630"
+    },
+    {
       "company": "Thomsun Infocare LLP",
       "description": "Business Analyst / Implementation Engineer",
       "location": "Infopark, Kochi",
@@ -1595,6 +1782,17 @@
       "sponsorship": false,
       "title": "Senior AI Evals QA Tester- Payment & Card (FinTech)",
       "url": "https://infopark.in/company-jobs/details/4/24546"
+    },
+    {
+      "company": "Tranzmeo",
+      "description": "Customer Support Executive",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-07-09",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Customer Support Executive",
+      "url": "https://infopark.in/company-jobs/details/157/24557"
     },
     {
       "company": "Pearlsoft Technologies LLP",
@@ -1650,17 +1848,6 @@
       "sponsorship": false,
       "title": "Senior .NET Full Stack Developer (4 - 7 years)",
       "url": "https://infopark.in/company-jobs/details/495/24506"
-    },
-    {
-      "company": "Difinity Digital",
-      "description": "Product Consultant - Audit",
-      "location": "Infopark, Kochi",
-      "posted_at": "2026-07-06",
-      "region": "infopark",
-      "source": "infopark",
-      "sponsorship": false,
-      "title": "Product Consultant - Audit",
-      "url": "https://infopark.in/company-jobs/details/495/24465"
     },
     {
       "company": "Cubet Techno Labs Pvt.Ltd",
@@ -1826,17 +2013,6 @@
       "sponsorship": false,
       "title": "iOS and Flutter Developer - 4+ Years",
       "url": "https://infopark.in/company-jobs/details/49/24212"
-    },
-    {
-      "company": "Art Technology and Software.",
-      "description": "Senior IT Support & Infrastructure Engineer",
-      "location": "Infopark, Kochi",
-      "posted_at": "2026-06-19",
-      "region": "infopark",
-      "source": "infopark",
-      "sponsorship": false,
-      "title": "Senior IT Support & Infrastructure Engineer",
-      "url": "https://infopark.in/company-jobs/details/4/24196"
     },
     {
       "company": "TouchWorld Technology",
@@ -2081,6 +2257,17 @@
       "url": "https://infopark.in/company-jobs/details/282/23948"
     },
     {
+      "company": "Emsyne Technologies Private Limited",
+      "description": "PostgreSql Database Administrator",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-06-04",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "PostgreSql Database Administrator",
+      "url": "https://infopark.in/company-jobs/details/76/23900"
+    },
+    {
       "company": "Stepping Stone Consultancy Services",
       "description": "Business Immigration Analyst (3+ yrs of exp with Excellent written and verbal communication skills in English)",
       "location": "Infopark, Kochi",
@@ -2092,15 +2279,15 @@
       "url": "https://infopark.in/company-jobs/details/351/23854"
     },
     {
-      "company": "Inspite Technologies Pvt.Ltd",
-      "description": "AI VIDEO Maker",
+      "company": "Emsyne Technologies Private Limited",
+      "description": "Application Support Engineer",
       "location": "Infopark, Kochi",
       "posted_at": "2026-06-02",
       "region": "infopark",
       "source": "infopark",
       "sponsorship": false,
-      "title": "AI VIDEO Maker",
-      "url": "https://infopark.in/company-jobs/details/442/23851"
+      "title": "Application Support Engineer",
+      "url": "https://infopark.in/company-jobs/details/76/23861"
     },
     {
       "company": "Simelabs - An Astek Company",
@@ -2202,6 +2389,17 @@
       "url": "https://infopark.in/company-jobs/details/73/23547"
     },
     {
+      "company": "Emsyne Technologies Private Limited",
+      "description": "Network Engineer L3",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-05-13",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Network Engineer L3",
+      "url": "https://infopark.in/company-jobs/details/76/23516"
+    },
+    {
       "company": "QC Verify Private Limited",
       "description": "Junior Creative Producer",
       "location": "Infopark, Kochi",
@@ -2257,17 +2455,6 @@
       "url": "https://infopark.in/company-jobs/details/506/23432"
     },
     {
-      "company": "Thomsun Infocare LLP",
-      "description": "ERP Implementation Engineer (Business Analyst)",
-      "location": "Infopark, Kochi",
-      "posted_at": "2026-05-08",
-      "region": "infopark",
-      "source": "infopark",
-      "sponsorship": false,
-      "title": "ERP Implementation Engineer (Business Analyst)",
-      "url": "https://infopark.in/company-jobs/details/259/23436"
-    },
-    {
       "company": "Origent Technologies",
       "description": ".NET MVC Developer",
       "location": "Infopark, Kochi",
@@ -2277,6 +2464,17 @@
       "sponsorship": false,
       "title": ".NET MVC Developer",
       "url": "https://infopark.in/company-jobs/details/506/23434"
+    },
+    {
+      "company": "Tranzmeo",
+      "description": "Technical Support Executive",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-05-04",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Technical Support Executive",
+      "url": "https://infopark.in/company-jobs/details/157/23344"
     },
     {
       "company": "Classic Technologies & Business Solutions Pvt. Ltd.",
@@ -2299,6 +2497,17 @@
       "sponsorship": false,
       "title": "Junior DevOps Engineer",
       "url": "https://infopark.in/company-jobs/details/83/23345"
+    },
+    {
+      "company": "Cascade Revenue Management Pvt. Ltd",
+      "description": "Senior AR Associate",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-04-30",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Senior AR Associate",
+      "url": "https://infopark.in/company-jobs/details/138/23323"
     },
     {
       "company": "TouchWorld Technology",
@@ -2431,6 +2640,17 @@
       "sponsorship": false,
       "title": "MRD Technician",
       "url": "https://infopark.in/company-jobs/details/132/23147"
+    },
+    {
+      "company": "Voyon Technology Pvt Ltd",
+      "description": "Software Engineer (.Net)",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-03-31",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Software Engineer (.Net)",
+      "url": "https://infopark.in/company-jobs/details/372/22765"
     },
     {
       "company": "Array Platforms Pvt Ltd",
@@ -2653,15 +2873,15 @@
       "url": "https://infopark.in/company-jobs/details/286/22036"
     },
     {
-      "company": "Techversant Infotech Pvt Ltd",
-      "description": "Senior Magento Developer",
+      "company": "Emsyne Technologies Private Limited",
+      "description": "Team Lead \u2013 Technical (Housing Finance)",
       "location": "Infopark, Kochi",
-      "posted_at": "2026-02-04",
+      "posted_at": "2026-02-03",
       "region": "infopark",
       "source": "infopark",
       "sponsorship": false,
-      "title": "Senior Magento Developer",
-      "url": "https://infopark.in/company-jobs/details/85/21918"
+      "title": "Team Lead \u2013 Technical (Housing Finance)",
+      "url": "https://infopark.in/company-jobs/details/76/21897"
     },
     {
       "company": "Eqsoft Business Solutions Pvt Ltd",
@@ -2673,17 +2893,6 @@
       "sponsorship": false,
       "title": "Full Stack Developer",
       "url": "https://infopark.in/company-jobs/details/286/21736"
-    },
-    {
-      "company": "Techversant Infotech Pvt Ltd",
-      "description": "Senior Flutter Developer",
-      "location": "Infopark, Kochi",
-      "posted_at": "2026-01-20",
-      "region": "infopark",
-      "source": "infopark",
-      "sponsorship": false,
-      "title": "Senior Flutter Developer",
-      "url": "https://infopark.in/company-jobs/details/85/21706"
     },
     {
       "company": "TouchWorld Technology",
@@ -2742,17 +2951,6 @@
     },
     {
       "company": "Techversant Infotech Pvt Ltd",
-      "description": "Senior Golang Developer",
-      "location": "Infopark, Kochi",
-      "posted_at": "2026-01-15",
-      "region": "infopark",
-      "source": "infopark",
-      "sponsorship": false,
-      "title": "Senior Golang Developer",
-      "url": "https://infopark.in/company-jobs/details/85/21639"
-    },
-    {
-      "company": "Techversant Infotech Pvt Ltd",
       "description": "Salesforce Functional Consultant",
       "location": "Infopark, Kochi",
       "posted_at": "2026-01-15",
@@ -2772,6 +2970,17 @@
       "sponsorship": false,
       "title": "Sales Executive",
       "url": "https://infopark.in/company-jobs/details/352/21539"
+    },
+    {
+      "company": "Voyon Technology Pvt Ltd",
+      "description": "Implementation/ Product Support Executive",
+      "location": "Infopark, Kochi",
+      "posted_at": "2026-01-08",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Implementation/ Product Support Executive",
+      "url": "https://infopark.in/company-jobs/details/372/21522"
     },
     {
       "company": "Techversant Infotech Pvt Ltd",
@@ -2904,6 +3113,17 @@
       "sponsorship": false,
       "title": "Google Ads Specialists",
       "url": "https://infopark.in/company-jobs/details/383/21065"
+    },
+    {
+      "company": "Emsyne Technologies Private Limited",
+      "description": "Senior Angular Developer",
+      "location": "Infopark, Kochi",
+      "posted_at": "2025-11-05",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Senior Angular Developer",
+      "url": "https://infopark.in/company-jobs/details/76/20981"
     },
     {
       "company": "Techversant Infotech Pvt Ltd",
@@ -3511,6 +3731,17 @@
       "url": "https://infopark.in/company-jobs/details/433/17813"
     },
     {
+      "company": "Emsyne Technologies Private Limited",
+      "description": "Senior .Net Core Developer",
+      "location": "Infopark, Kochi",
+      "posted_at": "2025-01-29",
+      "region": "infopark",
+      "source": "infopark",
+      "sponsorship": false,
+      "title": "Senior .Net Core Developer",
+      "url": "https://infopark.in/company-jobs/details/76/17723"
+    },
+    {
       "company": "Virtual Impulse Technologies",
       "description": "Sales Executive",
       "location": "Infopark, Kochi",
@@ -3710,17 +3941,6 @@
     },
     {
       "company": "Webandcrafts",
-      "description": "Performance marketing Strategist (Exp:4+years)",
-      "location": "Infopark, Kochi",
-      "posted_at": "2023-11-16",
-      "region": "infopark",
-      "source": "infopark",
-      "sponsorship": false,
-      "title": "Performance marketing Strategist (Exp:4+years)",
-      "url": "https://infopark.in/company-jobs/details/105/15190"
-    },
-    {
-      "company": "Webandcrafts",
       "description": "Graphic Designer (Exp: 2+ Years )",
       "location": "Infopark, Kochi",
       "posted_at": "2023-11-16",
@@ -3776,14 +3996,14 @@
     },
     {
       "company": "Webandcrafts",
-      "description": "UI/UX DESIGNER",
+      "description": "Social Media Analyst (2-5 Years)",
       "location": "Infopark, Kochi",
       "posted_at": "2022-04-01",
       "region": "infopark",
       "source": "infopark",
       "sponsorship": false,
-      "title": "UI/UX DESIGNER",
-      "url": "https://infopark.in/company-jobs/details/105/9378"
+      "title": "Social Media Analyst (2-5 Years)",
+      "url": "https://infopark.in/company-jobs/details/105/9369"
     },
     {
       "company": "Aabasoft Technologies India Private Limited",
@@ -3795,20 +4015,9 @@
       "sponsorship": false,
       "title": "SMO ANALYST",
       "url": "https://infopark.in/company-jobs/details/95/5840"
-    },
-    {
-      "company": "InerG Software Innovations Pvt.Ltd.",
-      "description": "Software Test Engineer : (Automation - Playwright and Selenium)",
-      "location": "Infopark, Kochi",
-      "posted_at": "2019-11-22",
-      "region": "infopark",
-      "source": "infopark",
-      "sponsorship": false,
-      "title": "Software Test Engineer : (Automation - Playwright and Selenium)",
-      "url": "https://infopark.in/company-jobs/details/181/3261"
     }
   ],
   "errors": [],
   "region": "infopark",
-  "generated_at": "2026-08-23T18:47:02+00:00"
+  "generated_at": "2026-08-27T17:52:53+00:00"
 }

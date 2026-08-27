@@ -37,6 +37,10 @@
   const sourceDialogClose = document.getElementById("sourceDialogClose");
   const sourceDialogScan = document.getElementById("sourceDialogScan");
   const sourceDialogBody = document.getElementById("sourceDialogBody");
+  const filtersPanel = document.getElementById("filtersPanel");
+  const menuSheet = document.getElementById("menuSheet");
+  const loadingSkeleton = document.getElementById("loadingSkeleton");
+  const toast = document.getElementById("toast");
 
   const REGION_LABELS = {
     all: "All",
@@ -62,6 +66,12 @@
   let sourceCatalog = [];
   let lastErrors = [];
   let scanTick = "";
+  let sheetFocusReturn = null;
+  let sheetFocusTrapHandler = null;
+  let searchTimer = null;
+  let toastTimer = null;
+  let toastUndo = null;
+  const hidePersistTimers = new Map();
 
   if (window.supabase && cfg.supabaseUrl && cfg.supabaseAnonKey) {
     sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
@@ -106,6 +116,44 @@
     } catch (_) {}
   }
 
+  function hasUrlFilters() {
+    const params = new URLSearchParams(location.search);
+    return ["region", "dateRange", "date", "markFilter", "status", "q", "includeUnknown"].some((k) =>
+      params.has(k)
+    );
+  }
+
+  function readUrlFilters() {
+    const params = new URLSearchParams(location.search);
+    const regions = ["all", "india", "eu", "uae", "infopark", "remote"];
+    const dates = ["all", "24h", "48h", "7d", "custom"];
+    const marks = ["open", "new", "applied", "flagged", "hidden", "all"];
+    const region = params.get("region");
+    const dateRange = params.get("dateRange") || params.get("date");
+    const markFilter = params.get("markFilter") || params.get("status");
+    const q = params.get("q");
+    const includeUnknownParam = params.get("includeUnknown");
+    if (regions.includes(region)) regionEl.value = region;
+    if (dates.includes(dateRange)) dateRangeEl.value = dateRange;
+    if (marks.includes(markFilter)) markFilterEl.value = markFilter;
+    if (typeof q === "string") qEl.value = q;
+    if (includeUnknownParam === "0" || includeUnknownParam === "false") includeUnknown.checked = false;
+    if (includeUnknownParam === "1" || includeUnknownParam === "true") includeUnknown.checked = true;
+    customWrap.classList.toggle("hidden", dateRangeEl.value !== "custom");
+  }
+
+  function syncUrlFromFilters() {
+    const params = new URLSearchParams();
+    if (regionEl.value && regionEl.value !== "all") params.set("region", regionEl.value);
+    if (dateRangeEl.value && dateRangeEl.value !== "24h") params.set("dateRange", dateRangeEl.value);
+    if (markFilterEl.value && markFilterEl.value !== "open") params.set("markFilter", markFilterEl.value);
+    const q = (qEl.value || "").trim();
+    if (q) params.set("q", q);
+    if (!includeUnknown.checked) params.set("includeUnknown", "0");
+    const qs = params.toString();
+    history.replaceState(null, "", qs ? `${location.pathname}?${qs}` : location.pathname);
+  }
+
   function rememberUrls() {
     try {
       const next = new Set(seenSnapshot);
@@ -119,6 +167,106 @@
   }
 
   loadPrefs();
+  if (hasUrlFilters()) readUrlFilters();
+
+  function focusableIn(root) {
+    if (!root) return [];
+    return Array.from(
+      root.querySelectorAll(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )
+    ).filter((el) => !el.closest(".hidden") && el.getAttribute("aria-hidden") !== "true");
+  }
+
+  function trapFocusIn(root) {
+    releaseFocusTrap();
+    sheetFocusTrapHandler = (e) => {
+      if (e.key !== "Tab") return;
+      const items = focusableIn(root);
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", sheetFocusTrapHandler);
+  }
+
+  function releaseFocusTrap() {
+    if (!sheetFocusTrapHandler) return;
+    document.removeEventListener("keydown", sheetFocusTrapHandler);
+    sheetFocusTrapHandler = null;
+  }
+
+  function openSheetFocus(root, returnEl) {
+    sheetFocusReturn = returnEl || document.activeElement;
+    requestAnimationFrame(() => {
+      const items = focusableIn(root);
+      if (items.length) items[0].focus();
+      trapFocusIn(root);
+    });
+  }
+
+  function closeSheetFocus() {
+    releaseFocusTrap();
+    const el = sheetFocusReturn;
+    sheetFocusReturn = null;
+    if (el && typeof el.focus === "function") el.focus();
+  }
+
+  function hideToast() {
+    toast.classList.add("hidden");
+    toast.innerHTML = "";
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = null;
+    toastUndo = null;
+  }
+
+  function showToast(message, onUndo) {
+    hideToast();
+    toast.classList.remove("hidden");
+    const msg = document.createElement("span");
+    msg.textContent = message;
+    toast.appendChild(msg);
+    if (onUndo) {
+      toastUndo = onUndo;
+      const undoBtn = document.createElement("button");
+      undoBtn.type = "button";
+      undoBtn.className = "btn btn-outline";
+      undoBtn.textContent = "Undo";
+      undoBtn.addEventListener("click", () => {
+        onUndo();
+        hideToast();
+      });
+      toast.appendChild(undoBtn);
+      toastTimer = setTimeout(() => {
+        hideToast();
+      }, 5000);
+    }
+  }
+
+  function setListLoading(on) {
+    if (loadingSkeleton) loadingSkeleton.classList.toggle("hidden", !on);
+  }
+
+  function savePrefsAndUrl() {
+    savePrefs();
+    syncUrlFromFilters();
+  }
+
+  function scheduleSearchRender() {
+    savePrefsAndUrl();
+    if (searchTimer) clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      searchTimer = null;
+      render();
+    }, 200);
+  }
 
   function urlKey(url) {
     return String(url || "").split("?")[0].toLowerCase();
@@ -377,12 +525,15 @@
     document.body.classList.add("filters-open");
     setBackdrop(true);
     filterOpeners.forEach((b) => b.setAttribute("aria-expanded", "true"));
+    openSheetFocus(filtersPanel, document.activeElement);
   }
 
   function closeFilters() {
+    if (!document.body.classList.contains("filters-open")) return;
     document.body.classList.remove("filters-open");
     if (!document.body.classList.contains("menu-open")) setBackdrop(false);
     filterOpeners.forEach((b) => b.setAttribute("aria-expanded", "false"));
+    closeSheetFocus();
   }
 
   function openMenu() {
@@ -390,12 +541,15 @@
     document.body.classList.add("menu-open");
     setBackdrop(true);
     menuBtn.setAttribute("aria-expanded", "true");
+    openSheetFocus(menuSheet, document.activeElement);
   }
 
   function closeMenu() {
+    if (!document.body.classList.contains("menu-open")) return;
     document.body.classList.remove("menu-open");
     if (!document.body.classList.contains("filters-open")) setBackdrop(false);
     menuBtn.setAttribute("aria-expanded", "false");
+    closeSheetFocus();
   }
 
   const SIDE_KEY = "scout.sideCollapsed";
@@ -658,7 +812,7 @@
           ${
             applyHref
               ? `<a class="apply" href="${escapeHtml(applyHref)}" target="_blank" rel="noopener noreferrer">Apply</a>`
-              : `<span class="apply">Apply</span>`
+              : `<button type="button" class="apply-unavailable" disabled aria-disabled="true">Apply unavailable</button>`
           }
           <div class="action-row">
             <button type="button" class="btn btn-ghost btn-sm" data-mark="applied" data-url="${escapeHtml(key)}">Applied</button>
@@ -690,7 +844,7 @@
     }
   }
 
-  async function setMark(key, state) {
+  async function setMark(key, state, opts = {}) {
     if (!sb || !sessionUser) return;
     if (!state) {
       const { error } = await sb.from("job_status").delete().eq("url", key);
@@ -703,8 +857,8 @@
         return;
       }
       delete marks[key];
-      render();
-      setStatus(`Cleared mark${publishedNote()}`);
+      if (!opts.skipRender) render();
+      if (!opts.quiet) setStatus(`Cleared mark${publishedNote()}`);
     } else {
       const { error } = await sb.from("job_status").upsert(
         {
@@ -724,15 +878,37 @@
         return;
       }
       marks[key] = state;
-      render();
-      const done =
-        state === "applied"
-          ? "Marked applied"
-          : state === "flagged"
-            ? "Flagged for later"
-            : "Hidden";
-      setStatus(done + publishedNote());
+      if (!opts.skipRender) render();
+      if (!opts.quiet) {
+        const done =
+          state === "applied"
+            ? "Marked applied"
+            : state === "flagged"
+              ? "Flagged for later"
+              : "Hidden";
+        setStatus(done + publishedNote());
+      }
     }
+  }
+
+  function hideJobWithUndo(key) {
+    const prev = marks[key] || "";
+    marks[key] = "hidden";
+    render();
+    showToast("Job hidden", () => {
+      const timer = hidePersistTimers.get(key);
+      if (timer) clearTimeout(timer);
+      hidePersistTimers.delete(key);
+      if (prev) marks[key] = prev;
+      else delete marks[key];
+      render();
+    });
+    const timer = setTimeout(async () => {
+      hidePersistTimers.delete(key);
+      if (marks[key] !== "hidden") return;
+      await setMark(key, "hidden", { skipRender: true, quiet: true });
+    }, 5000);
+    hidePersistTimers.set(key, timer);
   }
 
   async function scan() {
@@ -844,46 +1020,51 @@
       render();
       return;
     }
-    if (isLocalFlask() && !force) {
-      try {
-        const res = await fetch("/api/jobs");
-        if (res.ok) {
-          const data = await res.json();
-          if (Array.isArray(data.jobs)) {
-            localApi = true;
-            jobs = data.jobs;
-            generatedAt = data.generated_at || generatedAt;
-            applyCatalog(data);
-            jobsLoaded = true;
-            setScanLabel(scanButtonLabel());
-            if (jobs.length) showErrors(data.errors || []);
-            rememberUrls();
-            render();
-            return;
-          }
-        }
-      } catch (_) {
-        /* fall through to jobs.json */
-      }
-    }
-    localApi = false;
+    setListLoading(true);
     try {
-      const res = await fetch(`jobs.json?t=${Date.now()}`, { cache: "no-store" });
-      const data = await res.json();
-      jobs = data.jobs || [];
-      generatedAt = data.generated_at || null;
-      applyCatalog(data);
-      jobsLoaded = true;
-      setScanLabel(scanButtonLabel());
-      showErrors(data.errors || []);
-      rememberUrls();
-      render();
-    } catch (_) {
-      jobs = [];
-      generatedAt = null;
-      jobsLoaded = true;
-      setScanLabel(scanButtonLabel());
-      render();
+      if (isLocalFlask() && !force) {
+        try {
+          const res = await fetch("/api/jobs");
+          if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data.jobs)) {
+              localApi = true;
+              jobs = data.jobs;
+              generatedAt = data.generated_at || generatedAt;
+              applyCatalog(data);
+              jobsLoaded = true;
+              setScanLabel(scanButtonLabel());
+              if (jobs.length) showErrors(data.errors || []);
+              rememberUrls();
+              render();
+              return;
+            }
+          }
+        } catch (_) {
+          /* fall through to jobs.json */
+        }
+      }
+      localApi = false;
+      try {
+        const res = await fetch(`jobs.json?t=${Date.now()}`, { cache: "no-store" });
+        const data = await res.json();
+        jobs = data.jobs || [];
+        generatedAt = data.generated_at || null;
+        applyCatalog(data);
+        jobsLoaded = true;
+        setScanLabel(scanButtonLabel());
+        showErrors(data.errors || []);
+        rememberUrls();
+        render();
+      } catch (_) {
+        jobs = [];
+        generatedAt = null;
+        jobsLoaded = true;
+        setScanLabel(scanButtonLabel());
+        render();
+      }
+    } finally {
+      setListLoading(false);
     }
   }
 
@@ -908,14 +1089,20 @@
     if (act === "any-time") dateRangeEl.value = "all";
     if (act === "unknown") includeUnknown.checked = true;
     customWrap.classList.toggle("hidden", dateRangeEl.value !== "custom");
-    savePrefs();
+    savePrefsAndUrl();
     render();
   });
 
   results.addEventListener("click", (e) => {
     const btn = e.target.closest("button[data-mark]");
     if (!btn) return;
-    setMark(btn.getAttribute("data-url"), btn.getAttribute("data-mark") || "");
+    const key = btn.getAttribute("data-url");
+    const mark = btn.getAttribute("data-mark") || "";
+    if (mark === "hidden") {
+      hideJobWithUndo(key);
+      return;
+    }
+    setMark(key, mark);
   });
 
   loginForm.addEventListener("submit", async (e) => {
@@ -932,8 +1119,15 @@
       return;
     }
     loginSubmit.disabled = true;
+    loginSubmit.classList.add("is-busy");
+    loginSubmit.setAttribute("aria-busy", "true");
+    const loginLabel = loginSubmit.textContent;
+    loginSubmit.textContent = "Signing in…";
     const { error } = await sb.auth.signInWithPassword({ email, password });
     loginSubmit.disabled = false;
+    loginSubmit.classList.remove("is-busy");
+    loginSubmit.removeAttribute("aria-busy");
+    loginSubmit.textContent = loginLabel;
     if (error) showLoginError(authMessage(error));
   });
 
@@ -972,29 +1166,35 @@
 
   dateRangeEl.addEventListener("change", () => {
     customWrap.classList.toggle("hidden", dateRangeEl.value !== "custom");
-    savePrefs();
+    savePrefsAndUrl();
     render();
   });
   regionEl.addEventListener("change", () => {
     companyEl.value = "all";
-    savePrefs();
+    savePrefsAndUrl();
     render();
   });
-  companyEl.addEventListener("change", render);
+  companyEl.addEventListener("change", () => {
+    savePrefsAndUrl();
+    render();
+  });
   markFilterEl.addEventListener("change", () => {
-    savePrefs();
+    savePrefsAndUrl();
     render();
   });
   includeUnknown.addEventListener("change", () => {
-    savePrefs();
+    savePrefsAndUrl();
     render();
   });
-  qEl.addEventListener("input", () => {
-    savePrefs();
+  qEl.addEventListener("input", scheduleSearchRender);
+  dateFrom.addEventListener("change", () => {
+    savePrefsAndUrl();
     render();
   });
-  dateFrom.addEventListener("change", render);
-  dateTo.addEventListener("change", render);
+  dateTo.addEventListener("change", () => {
+    savePrefsAndUrl();
+    render();
+  });
   scanBtn.addEventListener("click", scan);
   setInterval(tickNextScan, 1000);
   tickNextScan();

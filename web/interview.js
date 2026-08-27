@@ -132,6 +132,45 @@
 
   let toggles = { ...DEFAULT_TOGGLES };
 
+  const COPY_SVG =
+    '<svg class="copy-ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+  const DONE_SVG =
+    '<svg class="copy-ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  const FAIL_SVG =
+    '<svg class="copy-ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+
+  function copyButton(label, attrs = "") {
+    return `<button type="button" class="btn btn-ghost btn-sm copy-answer-btn" ${attrs} title="${escapeHtml(
+      label
+    )}" aria-label="${escapeHtml(label)}">${COPY_SVG}<span class="sr-only">${escapeHtml(label)}</span></button>`;
+  }
+
+  function resetCopyButton(btn, label) {
+    btn.classList.remove("is-done", "is-fail");
+    btn.innerHTML = `${COPY_SVG}<span class="sr-only">${escapeHtml(label)}</span>`;
+    btn.setAttribute("aria-label", label);
+    btn.title = label;
+  }
+
+  function setCopyButtonState(btn, state, label) {
+    btn.classList.remove("is-done", "is-fail");
+    if (state === "done") {
+      btn.classList.add("is-done");
+      btn.innerHTML = `${DONE_SVG}<span class="sr-only">Copied</span>`;
+      btn.setAttribute("aria-label", "Copied");
+      btn.title = "Copied";
+      return;
+    }
+    if (state === "fail") {
+      btn.classList.add("is-fail");
+      btn.innerHTML = `${FAIL_SVG}<span class="sr-only">Copy failed</span>`;
+      btn.setAttribute("aria-label", "Copy failed");
+      btn.title = "Copy failed";
+      return;
+    }
+    resetCopyButton(btn, label);
+  }
+
   function escapeHtml(s) {
     return String(s)
       .replaceAll("&", "&amp;")
@@ -223,7 +262,7 @@
                   data-copy-option="${optionIdx}"
                   title="Copy this option"
                   aria-label="Copy this option"
-                >⧉</button>
+                >${COPY_SVG}<span class="sr-only">Copy this option</span></button>
                 <span class="hidden" data-option-text="${optionIdx}">${escapeHtml(clean)}</span>
               </div>
             `;
@@ -238,13 +277,7 @@
               ${
                 row.id === "q3"
                   ? ""
-                  : `<button
-                type="button"
-                class="btn btn-ghost btn-sm copy-answer-btn"
-                data-copy="${escapeHtml(row.id)}"
-                title="Copy answer"
-                aria-label="Copy answer"
-              >⧉</button>`
+                  : copyButton("Copy answer", `data-copy="${escapeHtml(row.id)}"`)
               }
             </header>
             ${
@@ -321,16 +354,17 @@
     }
 
     const activeBtn = btn || optionBtn;
+    const defaultLabel = btn ? "Copy answer" : "Copy this option";
     try {
       await navigator.clipboard.writeText(text);
-      activeBtn.textContent = "✓";
+      setCopyButtonState(activeBtn, "done");
       window.setTimeout(() => {
-        activeBtn.textContent = "⧉";
+        setCopyButtonState(activeBtn, "idle", defaultLabel);
       }, 900);
     } catch (_) {
-      activeBtn.textContent = "!";
+      setCopyButtonState(activeBtn, "fail");
       window.setTimeout(() => {
-        activeBtn.textContent = "⧉";
+        setCopyButtonState(activeBtn, "idle", defaultLabel);
       }, 1200);
     }
   });

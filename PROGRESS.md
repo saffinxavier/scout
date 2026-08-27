@@ -1,6 +1,6 @@
 # Scout — Progress
 
-Last updated: 2026-08-26
+Last updated: 2026-08-27
 
 ## Done
 - [x] Local Flask app + `config.yaml` sources + dark job-board UI
@@ -35,6 +35,7 @@ Last updated: 2026-08-26
 - [x] Collapsible sidebar (icon rail, `scout.sideCollapsed` in localStorage), auto-fill job grid columns (no more dead space between breakpoints, shell max 96rem), sheet Close buttons are X icons
 - [x] **Remote** region (India-eligible): `remotive_remote` (Remotive+Jobicy geo gate) + Himalayas public API; no visa gate; cache `data/jobs-remote.json`
 - [x] [`SOURCES.md`](SOURCES.md) — regions, filter matrix, and per-source on/off + fetch notes
+- [x] UI/UX audit fixes: sheet focus trap + focus restore; removed `aria-live` from results; 44px info target; disabled Apply button; copy buttons with SVG + labels; `color-scheme` / `theme-color` / `touch-action` / sheet `overscroll-behavior`; login busy state; hide-with-undo toast; reduced-motion scan spinner + skeleton loaders; debounced search + URL filter sync; distinct region pill colors; sheet enter transitions (respect reduced motion)
 
 ## Known limitations
 - PwC still uses Workday CXS; when Workday is in maintenance the source fails with a clear error (no public Phenom board)
@@ -55,7 +56,6 @@ Last updated: 2026-08-26
 - [ ] Fetch Infopark/Workday/KPMG job detail for better year/degree/Java detection
 - [ ] Source health line (jobs per source)
 - [ ] GS JSON search if a public endpoint appears
-- [ ] Filter sheet focus trap
 
 ## Key paths
 - Config: `config.yaml`
